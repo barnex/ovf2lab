@@ -1,12 +1,62 @@
 import java.io.Reader;
-//import java.io.IOException;
+import java.io.IOException;
+import java.lang.Character;
 
+// Scanner tokenizes input text.
 final class Scanner {
 
-    Scanner(Reader in) {
+    Reader in;
+    int peeked;                                  // next character
+    private static final int UNINITIALIZED = -2; // nothing peeked yet
+    boolean eof;                                 // EOF emitted?
 
+    Scanner(Reader in) {
+        this.in = in;
+        this.peeked = UNINITIALIZED;
     }
 
+    // next parses and returns the next token in the stream.
+    // After an EOF has been emitted, subsequent calls return null.
+    Token next() throws IOException {
+        if (this.eof) {
+            return null;
+        }
+
+        Token tok = new Token();
+        int c = this.read();
+
+        // skip leading whitespace
+        while (c!=-1 && Character.isWhitespace((char)(c))) {
+            c = this.read();
+        }
+
+        if (c == -1) {
+            tok.type = Token.EOF;
+            this.eof = true;
+            return tok;
+        }
+
+        tok.val = "" + (char)(c);
+        return tok;
+    }
+
+
+
+    // Next returns the next character, or -1 if end of file has been reached.
+    int read() throws IOException {
+        int next = this.peek();
+        this.peeked = this.in.read();
+        return next;
+    }
+
+    // Peek returns the character that will be returned by next(),
+    // without advancing in the stream.
+    int peek() throws IOException {
+        if (this.peeked == UNINITIALIZED) {
+            this.peeked = this.in.read();
+        }
+        return this.peeked;
+    }
 }
 
 
