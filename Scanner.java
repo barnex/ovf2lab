@@ -30,16 +30,34 @@ final class Scanner {
             c = this.read();
         }
 
+        // check EOF
         if (c == -1) {
             tok.type = Token.EOF;
             this.eof = true;
             return tok;
         }
 
-        tok.val = "" + (char)(c);
+        char ch = (char)(c);
+        if (Character.isLetter(ch)) {
+            tok.type = Token.WORD;
+            tok.val = "" + ch;
+
+            while (isAlphaNum(this.peek())) {
+                tok.val += (char)(this.read());
+            }
+            return tok;
+        }
+
+        tok.val = "" + ch;
         return tok;
     }
 
+    static boolean isAlphaNum(int c) {
+        if (c < 0) {
+            return false;
+        }
+        return Character.isLetterOrDigit((char)(c));
+    }
 
 
     // Next returns the next character, or -1 if end of file has been reached.

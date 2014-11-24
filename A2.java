@@ -16,9 +16,7 @@ public final class A2 {
                 fatal(e);
                 return;
             }
-
         }
-
     }
 
 
