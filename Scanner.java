@@ -58,19 +58,24 @@ final class Scanner {
 			return Token.EOF;
 		}
 
-		if (isLinebreak(this.current)) {
+		if (isEOL(this.current)) {
 			this.consumeEOL();
 			return Token.EOL;
 		}
 
 		if (isAlpha(this.current)) {
 			this.consumeWord();
-			return Token.WORD;
+			return Token.IDENT;
 		}
 
 		if (isNum(this.current) || (this.current == '.' && isNum(this.next))) {
 			this.consumeNumber();
 			return Token.NUMBER;
+		}
+
+		if (this.current == '"') {
+			this.consumeQuotedString();
+			return Token.STRING;
 		}
 
 		// else:
@@ -126,6 +131,20 @@ final class Scanner {
 			this.consumeChar();
 		}
 		this.consumeNumber();
+	}
+
+	// consumes a quoted string, including the quotes.
+	// the consumed value may be an unterminated string,
+	// which should be caught as a parse error later.
+	void consumeQuotedString() throws IOException {
+		this.consumeChar();
+		while(this.current != '"' && !isEOL(this.current) && this.current != -1) {
+			this.consumeChar();
+		}
+		if(this.current == '"') {
+			this.consumeChar();
+		}
+
 	}
 
 	// consume digits 0-9
@@ -211,7 +230,7 @@ final class Scanner {
 	}
 
 	// is c a linebreak?
-	static boolean isLinebreak(int c) {
+	static boolean isEOL(int c) {
 		return (c == '\n' || c == '\r');
 	}
 

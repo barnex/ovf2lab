@@ -15,3 +15,8 @@ ident_ifier
 identifier_2
 identifier_
 identifier2_
+
+"quoted string"
+"quoted things 123.456e-7 + - * / ( )"
+"unterminated string
+"unterminated string

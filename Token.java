@@ -9,10 +9,11 @@ final class Token {
 	static final int INVALID = 0;
 	static final int EOF = 1;
 	static final int EOL = 2;
-	static final int WORD = 3;
+	static final int IDENT = 3;
 	static final int NUMBER = 4;
-	static final int CHAR = 5;
-	static final String[] typeName = {"INVALID", "EOF", "EOL", "WORD", "NUMBER", "CHAR"};
+	static final int STRING = 5;
+	static final int CHAR = 6;
+	static final String[] typeName = {"INVALID", "EOF", "EOL", "IDENT", "NUMBER", "STRING", "CHAR"};
 
 
 	String typeName() {
