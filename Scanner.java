@@ -54,7 +54,7 @@ final class Scanner {
 			return;
 		}
 
-		if (isNum(this.current)) {
+		if (isNum(this.current) || (this.current == '.' && isNum(this.next))) {
 			this.token.type = Token.NUMBER;
 			this.consumeNumber();
 			return;
@@ -95,7 +95,7 @@ final class Scanner {
 	// Malformed input is not caught here, but will cause
 	// a parse error.
 	void consumeNumber()throws IOException {
-		this.consumeDigits();
+		this.consume("0123456789.");
 		if (this.current == 'E' || this.current == 'e') {
 			this.consumeChar();
 		} else {
@@ -122,12 +122,36 @@ final class Scanner {
 		}
 	}
 
+	// consume the current character
 	void consumeChar() throws IOException {
 		if (!isChar(this.current)) {
 			panic("not a char");
 		}
 		this.append((char)(this.current));
 		this.advance();
+	}
+
+	// consume as many characters contained in pattern as possible.
+	// return whether at least one character has been consumed.
+	// E.g.:
+	// 	consume("0123456789.");
+	// consumes as many digits and periods as possible.
+	boolean consume(String pattern) throws IOException {
+		if (!isChar(this.current)) {
+			return false;
+		}
+
+		boolean consumed = false;
+		int i=0;
+		while (i<pattern.length()) {
+			if (pattern.charAt(i) == this.current) {
+				this.consumeChar();
+				consumed = true;
+				i = 0;
+			}
+			i++;
+		}
+		return consumed;
 	}
 
 	// append character c to stringbuilder
@@ -150,7 +174,7 @@ final class Scanner {
 
 	// is c a letter?
 	static boolean isAlpha(int c) {
-		return isChar(c) && Character.isLetter((char)(c));
+		return isChar(c) && (Character.isLetter((char)(c)) || c == '_');
 	}
 
 	// is c a digit ?
