@@ -75,7 +75,7 @@ final class Scanner {
 
 		// else:
 		this.consumeChar();
-		return Token.INVALID; // TODO
+		return Token.CHAR;
 	}
 
 	// advances current and next characters by one.
@@ -192,7 +192,7 @@ final class Scanner {
 		return isAlpha(c) || isNum(c);
 	}
 
-	// is c a letter?
+	// is c a valid letter for an identifier?
 	static boolean isAlpha(int c) {
 		return isChar(c) && (Character.isLetter((char)(c)) || c == '_');
 	}
