@@ -16,7 +16,7 @@ public final class E2 {
 		for (String f:args) {
 			try {
 				Reader in = new FileReader(new File(f));
-				Scanner scanner = new Scanner(in);
+				Scanner scanner = new Scanner(f, in);
 				for(scanner.next(); scanner.token != null; scanner.next()) {
 					System.out.println(scanner.token);
 				}

@@ -1,7 +1,9 @@
 final class Token {
 
-	int type;
-	String value;
+	String value; // string representation of the token
+	int type;     // token type
+	String file;  // file token appeared in
+	int line, pos;      // positions in file
 
 	// token types
 	static final int INVALID = 0;
@@ -22,6 +24,6 @@ final class Token {
 	}
 
 	public String toString() {
-		return typeName() + ":" + this.value;
+		return this.file + ":" + this.line + ":" + this.pos + ": " + this.typeName() + ":" + this.value;
 	}
 }

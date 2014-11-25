@@ -8,14 +8,19 @@ final class Scanner {
 	Reader in;
 	int current, next; // current and next character
 	StringBuilder buf;
+	String filename;
+	int line, pos;
 	Token token;
 
 
-	Scanner(Reader in) throws IOException {
+	Scanner(String filename, Reader in) throws IOException {
 		this.in = in;
+		this.buf = new StringBuilder();
+		this.filename = filename;
 		this.advance(); // sets next, not yet current
 		this.advance();
-		this.buf = new StringBuilder();
+		this.pos = 1;
+		this.line = 1;
 	}
 
 	// next parses and returns the next token in the stream.
@@ -28,14 +33,20 @@ final class Scanner {
 
 		this.token = new Token();
 		this.buf.setLength(0);
+
+		this.skipWhitespace();
+		int line = this.line;
+		int pos = this.pos;
 		scanToken();
 		this.token.value = buf.toString();
+		this.token.line = line;
+		this.token.pos = pos;
+		this.token.file = this.filename;
 	}
 
 	// scan the token staring at current position,
 	// append value to buf but not yet to token.value;
 	private void scanToken() throws IOException {
-		this.skipWhitespace();
 
 		if (this.current == -1) {
 			this.token.type = Token.EOF;
@@ -70,6 +81,7 @@ final class Scanner {
 	void advance() throws IOException {
 		this.current = this.next;
 		this.next = this.in.read();
+		this.pos++;
 	}
 
 	// after skipWhitespace, the current character is not whitespace.
@@ -81,11 +93,18 @@ final class Scanner {
 
 	// consume an "\n" or "\r\n", append to token.value
 	void consumeEOL() throws IOException {
+		boolean consumed = false;
 		if (this.current == '\r') {
 			this.consumeChar();
+			consumed = true;
 		}
 		if (this.current == '\n') {
 			this.consumeChar();
+			consumed = true;
+		}
+		if (consumed) {
+			this.line++;
+			this.pos = 1;
 			return;
 		}
 		panic("not at EOL");
