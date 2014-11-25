@@ -1,5 +1,5 @@
 all:
 	rm -f *.class
 	javac *.java
-	gcj -o a2 --main=A2 *.java
+	gcj -o e2 --main=E2 -Wall -Werror *.java
 	astyle *.java
