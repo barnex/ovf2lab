@@ -5,13 +5,16 @@ import java.lang.Character;
 // Scanner tokenizes input text.
 final class Scanner {
 
-	Reader in;
-	int current, next; // current and next character
-	StringBuilder buf;
-	String filename;
-	int line, pos;
-	Token currentToken, nextToken;
+	public Token currentToken, nextToken; // current and next (peeked) token.
 
+	private Reader in;         // input stream
+	private String filename;   // file name to document token position
+	private int line, pos;     // token line and position in file
+	private int current, next; // current and next character
+	private StringBuilder buf; // builds token value
+
+	// Constructs a scanner that tokenizes the content delivered by in.
+	// filename is used to report token positions
 	Scanner(String filename, Reader in) throws IOException {
 		this.in = in;
 		this.buf = new StringBuilder();
@@ -23,8 +26,8 @@ final class Scanner {
 		this.next();
 	}
 
-	// next parses and returns the next token in the stream.
-	// After an EOF has been emitted, subsequent calls return null.
+	// next() advances currentToken, nextToken by one token.
+	// After an EOF has been emitted, subsequent tokens are null.
 	void next() throws IOException {
 		Token t = null;
 		this.buf.setLength(0);
@@ -51,7 +54,6 @@ final class Scanner {
 	// append value to buf but not yet to token.value.
 	// returns the token type.
 	private int scanToken() throws IOException {
-
 		if (this.current == -1) {
 			return Token.EOF;
 		}
@@ -76,9 +78,7 @@ final class Scanner {
 		return Token.INVALID; // TODO
 	}
 
-
-
-	// advances current, next by one character.
+	// advances current and next characters by one.
 	void advance() throws IOException {
 		this.current = this.next;
 		this.next = this.in.read();
