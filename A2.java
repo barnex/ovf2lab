@@ -9,8 +9,8 @@ public final class A2 {
             try {
                 Reader in = new FileReader(new File(f));
                 Scanner scanner = new Scanner(in);
-                for(Token t = scanner.next(); t != null; t=scanner.next()) {
-                    System.out.println(t);
+                for(scanner.next(); scanner.token != null; scanner.next()) {
+                    System.out.println(scanner.token);
                 }
             } catch(Exception e) {
                 fatal(e);
