@@ -7,7 +7,18 @@ final class Scanner {
 
     Reader in;
     int current, next; // current and next character
-    Token token;
+	Stringbuilder buf;
+	String tval;
+
+	// token types
+    static final int TT_INVALID = 0;
+    static final int TT_EOF = 1;
+    static final int TT_EOL = 2;
+    static final int TT_WORD = 3;
+    static final int TT_NUMBER = 4;
+    static final int TT_LPAREN = 5;
+    static final int TT_RPAREN = 6;
+    //static final String[] ttName = {"INVALID", "EOF", "EOL", "WORD", "NUMBER", "(", ")"};
 
     Scanner(Reader in) throws IOException {
         this.in = in;
@@ -26,7 +37,7 @@ final class Scanner {
 
         this.token = new Token();
 
-        this.skipWhitespace();
+		this.skipWhitespace();
 
         // check EOF
         if (this.current == -1) {
@@ -34,10 +45,10 @@ final class Scanner {
             return;
         }
 
-        if (isLinebreak(this.current)) {
-            this.token.type = Token.EOL;
-            this.skipCRLF();
-        }
+		if (isLinebreak(this.current)){
+			this.token.type = Token.EOL;
+			this.skipCRLF();
+		}
 
         //if (Character.isLetter(ch)) {
         //    tok.type = Token.WORD;
@@ -60,19 +71,19 @@ final class Scanner {
         this.next = this.in.read();
     }
 
-    // after skipWhitespace, the current character is not whitespace.
-    void skipWhitespace() throws IOException {
-        while (isWhitespace(this.current)) {
-            this.advance();
-        }
-    }
+	// after skipWhitespace, the current character is not whitespace.
+	void skipWhitespace() throws IOException{
+		while (isWhitespace(this.current)){
+			this.advance();
+		}
+	}
 
-    // when at a CR, also consume the LF
-    void skipCRLF() throws IOException {
-        if (this.current == '\r' && this.next == '\n') {
-            this.advance();
-        }
-    }
+	// when at a CR, also consume the LF
+	void skipCRLF() throws IOException{
+		if (this.current == '\r' && this.next == '\n'){
+			this.advance();
+		}
+	}
 
     static boolean isAlphaNum(int c) {
         if (c < 0) {
@@ -81,40 +92,14 @@ final class Scanner {
         return Character.isLetterOrDigit((char)(c));
     }
 
-    static boolean isWhitespace(int c) {
-        if (c == -1 || c == '\r' || c == '\n') {
-            return false;
-        }
-        return Character.isWhitespace((char)(c));
-    }
+	static boolean isWhitespace(int c){
+		if (c == -1 || c == '\r' || c == '\n') {return false;}
+		return Character.isWhitespace((char)(c));	
+	}
 
-    static boolean isLinebreak(int c) {
-        return (c == '\n' || c == '\r');
-    }
+	static boolean isLinebreak(int c){
+		return (c == '\n' || c == '\r');
+	}
 }
 
 
-final class Token {
-    int type;
-    String val;
-
-    static final int INVALID = 0;
-    static final int EOF = 1;
-    static final int EOL = 2;
-    static final int WORD = 3;
-    static final int NUMBER = 4;
-    static final int LPAREN = 5;
-    static final int RPAREN = 6;
-    static final String[] typeName = {"INVALID", "EOF", "EOL", "WORD", "NUMBER", "(", ")"};
-
-    Token() {
-        this.val = "";
-    }
-
-    public String toString() {
-        if (this.type >= typeName.length) {
-            return "INVALID:" + this.val;
-        }
-        return typeName[this.type] + " " + this.val;
-    }
-}
