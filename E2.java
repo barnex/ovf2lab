@@ -17,8 +17,8 @@ public final class E2 {
 			try {
 				Reader in = new FileReader(new File(f));
 				Scanner scanner = new Scanner(f, in);
-				for(scanner.next(); scanner.token != null; scanner.next()) {
-					System.out.println(scanner.token);
+				for(scanner.next(); scanner.currentToken != null; scanner.next()) {
+					System.out.println(scanner.currentToken + "->" + scanner.nextToken);
 				}
 			} catch(Exception e) {
 				fatal(e);

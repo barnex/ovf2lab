@@ -10,8 +10,7 @@ final class Scanner {
 	StringBuilder buf;
 	String filename;
 	int line, pos;
-	Token token;
-
+	Token currentToken, nextToken;
 
 	Scanner(String filename, Reader in) throws IOException {
 		this.in = in;
@@ -21,58 +20,60 @@ final class Scanner {
 		this.advance();
 		this.pos = 1;
 		this.line = 1;
+		this.next();
 	}
 
 	// next parses and returns the next token in the stream.
 	// After an EOF has been emitted, subsequent calls return null.
 	void next() throws IOException {
-		if (this.current == -1 && this.next == -1) {
-			this.token = null; // we're past EOF
-			return;
-		}
-
-		this.token = new Token();
+		Token t = null;
 		this.buf.setLength(0);
 
-		this.skipWhitespace();
-		int line = this.line;
-		int pos = this.pos;
-		scanToken();
-		this.token.value = buf.toString();
-		this.token.line = line;
-		this.token.pos = pos;
-		this.token.file = this.filename;
+		if (this.current == -1 && this.next == -1) {
+			t = null;
+		} else {
+			t = new Token();
+			this.skipWhitespace();
+			int line = this.line;
+			int pos = this.pos;
+			t.type = scanToken();
+			t.value = buf.toString();
+			t.line = line;
+			t.pos = pos;
+			t.file = this.filename;
+		}
+
+		this.currentToken = nextToken;
+		this.nextToken = t;
 	}
 
 	// scan the token staring at current position,
-	// append value to buf but not yet to token.value;
-	private void scanToken() throws IOException {
+	// append value to buf but not yet to token.value.
+	// returns the token type.
+	private int scanToken() throws IOException {
 
 		if (this.current == -1) {
-			this.token.type = Token.EOF;
-			return;
+			return Token.EOF;
 		}
 
 		if (isLinebreak(this.current)) {
-			this.token.type = Token.EOL;
 			this.consumeEOL();
-			return;
+			return Token.EOL;
 		}
 
 		if (isAlpha(this.current)) {
-			this.token.type = Token.WORD;
 			this.consumeWord();
-			return;
+			return Token.WORD;
 		}
 
 		if (isNum(this.current) || (this.current == '.' && isNum(this.next))) {
-			this.token.type = Token.NUMBER;
 			this.consumeNumber();
-			return;
+			return Token.NUMBER;
 		}
 
 		// else:
 		this.consumeChar();
+		return Token.INVALID; // TODO
 	}
 
 
