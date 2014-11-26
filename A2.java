@@ -2,7 +2,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.Reader;
 
-public final class E2 {
+public final class A2 {
 	public static void main(String[] args) {
 		try {
 			mainUnsafe(args);
