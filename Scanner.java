@@ -19,10 +19,11 @@ final class Scanner {
 		this.in = in;
 		this.buf = new StringBuilder();
 		this.filename = filename;
-		this.advance(); // sets next, not yet current
+		this.advance(); // set up current, next character
 		this.advance();
 		this.pos = 1;
 		this.line = 1;
+		this.next();   // set up currentToken, nextToken
 		this.next();
 	}
 

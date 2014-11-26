@@ -9,13 +9,9 @@ import java.util.ArrayList;
 final class Parser {
 
 	Scanner scanner;
-	Token token, next;
 	Node ast;
 	ArrayList<String> errors;
 
-	Parser() {
-
-	}
 
 	void parseFile(String filename) throws FileNotFoundException, IOException {
 		Reader reader = new FileReader(new File(filename));
@@ -26,12 +22,6 @@ final class Parser {
 			this.ast = parseIdent();
 		} catch(Bailout e) {
 			// nothing to do
-		}
-
-		if (this.errors.size() > 0) {
-			this.printErrors(System.err);
-		} else {
-			this.ast.print(System.out);
 		}
 	}
 
@@ -62,7 +52,7 @@ final class Parser {
 	// fatal error if not.
 	void expect(int tokenType) throws Bailout {
 		if (this.token().type != tokenType) {
-			this.fatal(this.token().pos() + ": expected" + Token.typeName(tokenType));
+			this.fatal(this.token().pos() + ": expected " + Token.typeName(tokenType) + ", found: " + this.token().value);
 		}
 	}
 
@@ -98,7 +88,7 @@ final class Ident extends AbsNode implements Node {
 		super(t);
 	}
 	public void print(PrintStream out) {
-
+		out.println(super.token.value);
 	}
 }
 
