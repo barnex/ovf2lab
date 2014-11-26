@@ -7,11 +7,11 @@ final class Scanner {
 
 	public Token currentToken, nextToken; // current and next (peeked) token.
 
-	private Reader in;         // input stream
-	private String filename;   // file name to document token position
-	private int line, pos;     // token line and position in file
-	private int current, next; // current and next character
-	private StringBuilder buf; // builds token value
+	Reader in;         // input stream
+	String filename;   // file name to document token position
+	int line, pos;     // token line and position in file
+	int current, next; // current and next character
+	StringBuilder buf; // builds token value
 
 	// Constructs a scanner that tokenizes the content delivered by in.
 	// filename is used to report token positions
@@ -29,7 +29,7 @@ final class Scanner {
 
 	// next() advances currentToken, nextToken by one token.
 	// After an EOF has been emitted, subsequent tokens are null.
-	void next() throws IOException {
+	public void next() throws IOException {
 		Token t = null;
 		this.buf.setLength(0);
 
@@ -54,7 +54,7 @@ final class Scanner {
 	// scan the token staring at current position,
 	// append value to buf but not yet to token.value.
 	// returns the token type.
-	private int scanToken() throws IOException {
+	int scanToken() throws IOException {
 		if (this.current == -1) {
 			return Token.EOF;
 		}

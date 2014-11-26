@@ -12,33 +12,50 @@ final class Parser {
 	Node ast;
 	ArrayList<String> errors;
 
-
-	void parseFile(String filename) throws FileNotFoundException, IOException {
+	public void parseFile(String filename) throws FileNotFoundException, IOException {
 		Reader reader = new FileReader(new File(filename));
 		this.scanner = new Scanner(filename, reader);
 		this.errors = new ArrayList<String>();
 
 		try {
-			this.ast = parseIdent();
+			parse();
 		} catch(Bailout e) {
 			// nothing to do
 		}
 	}
 
-	Token token() {
-		return this.scanner.currentToken;
+	// Parsing
+
+	void parse() throws Bailout{
+		this.ast = parseExpr();
 	}
 
-	Token next() {
-		return this.scanner.nextToken;
-	}
-
-	void advance() throws Bailout {
-		try {
-			this.scanner.next();
-		} catch(IOException e) {
-			fatal(e.toString());
+	Node parseExpr() throws Bailout{
+		if (token().type == Token.NUMBER){
+			return parseNumber();
 		}
+		
+		error("expecting expression, found: " + token());
+		return null;
+	}
+
+	Node parseNumber() throws Bailout{
+		try{
+			long v = Long.parseLong(token().value);
+			return new IntLit(v);
+		}catch(NumberFormatException e){
+			// so it's not an int
+		}
+
+		try{
+			double v = Double.parseDouble(token().value);
+			return new FloatLit(v);
+		}catch(NumberFormatException e){
+			// so it's not a float
+		}
+
+		error("malformed number: " + token());
+		return null;
 	}
 
 	Node parseIdent() throws Bailout {
@@ -48,29 +65,56 @@ final class Parser {
 		return ident;
 	}
 
+	// Tokenizing
+
+	// Returns the current token.
+	Token token() {
+		return this.scanner.currentToken;
+	}
+
+	// Peeks the next token.
+	Token next() {
+		return this.scanner.nextToken;
+	}
+
+	// Advances by one token.
+	void advance() throws Bailout {
+		try {
+			this.scanner.next();
+		} catch(IOException e) {
+			this.error(e.toString());
+		}
+	}
+
+	// Error handling
+
 	// expect the current token to be of type tokenType,
 	// fatal error if not.
 	void expect(int tokenType) throws Bailout {
 		if (this.token().type != tokenType) {
-			this.fatal(this.token().pos() + ": expected " + Token.typeName(tokenType) + ", found: " + this.token().value);
+			this.error("expected " + Token.typeName(tokenType) + ", found: " + this.token().value);
 		}
 	}
 
-	void fatal(String error) throws Bailout {
-		this.errors.add(error);
+	// add error with position information of current token + msg.
+	void error(String msg) throws Bailout{
+		this.errors.add(this.token().pos() + ": " + msg);
 		bailout();
 	}
 
-	void printErrors(PrintStream out) {
+	// Throw Bailout, stop parsing.
+	static void bailout() throws Bailout {
+		throw new Bailout();
+	}
+
+	public void printErrors(PrintStream out) {
 		for(String err: this.errors) {
 			out.println(err);
 		}
 	}
-
-	static void bailout() throws Bailout {
-		throw new Bailout();
-	}
 }
+
+// ast
 
 interface Node {
 	void print(PrintStream out);
@@ -83,7 +127,27 @@ abstract class AbsNode {
 	}
 }
 
-final class Ident extends AbsNode implements Node {
+class IntLit extends AbsNode implements Node{
+	long value;
+	IntLit(long value){
+		this.value = value;
+	}
+	public void print(PrintStream out) {
+		out.println(this.value);
+	}
+}
+
+class FloatLit extends AbsNode implements Node{
+	double value;
+	FloatLit(double value){
+		this.value = value;
+	}
+	public void print(PrintStream out) {
+		out.println(this.value);
+	}
+}
+
+class Ident extends AbsNode implements Node {
 	Ident(Token t) {
 		super(t);
 	}
