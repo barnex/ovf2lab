@@ -1,3 +1,4 @@
+
 final class Token {
 
 	String value; // string representation of the token
@@ -16,14 +17,18 @@ final class Token {
 	static final String[] typeName = {"INVALID", "EOF", "EOL", "IDENT", "NUMBER", "STRING", "CHAR"};
 
 
-	String typeName() {
-		if (this.type < 0 || this.type >= typeName.length) {
-			return "UNKNOWN(" + this.type + ")";
+	public static String typeName(int type) {
+		if (type < 0 || type >= typeName.length) {
+			return "UNKNOWN(" + type + ")";
 		}
-		return typeName[this.type];
+		return typeName[type];
+	}
+
+	public String pos() {
+		return this.file + ":" + this.line + ":" + this.pos;
 	}
 
 	public String toString() {
-		return this.file + ":" + this.line + ":" + this.pos + ": " + this.typeName() + ":" + this.value;
+		return this.pos() + ": " + Token.typeName(this.type) + ":" + this.value;
 	}
 }
