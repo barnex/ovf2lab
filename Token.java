@@ -17,9 +17,20 @@ final class Token {
 	static final int CHAR = 6;
 	static final int LPAREN = 7;
 	static final int RPAREN = 8;
+	static final int BINOP = 9;
 
 	// maps token type to human readable description
-	static final String[] typeName = {"invalid character", "EOF", "EOL", "identifier", "number", "string", "character", "left paren", "right paren"};
+	static final String[] typeName = {"invalid character",
+	                                  "EOF",
+	                                  "EOL",
+	                                  "identifier",
+	                                  "number",
+	                                  "string",
+	                                  "character",
+	                                  "left paren",
+	                                  "right paren",
+	                                  "binary operator"
+	                                 };
 
 
 	// human readable description for token type

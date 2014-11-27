@@ -47,38 +47,37 @@ final class Scanner {
 	// append value to buf but not yet to token.value.
 	// returns the token type.
 	int scanToken() throws IOException {
-		if (this.current == -1) {
+		int c = this.current;
+		if (c == -1) {
 			return Token.EOF;
 		}
-
-		if (isEOL(this.current)) {
+		if (isEOL(c)) {
 			this.consumeEOL();
 			return Token.EOL;
 		}
-
-		if (isAlpha(this.current)) {
+		if (isAlpha(c)) {
 			this.consumeWord();
 			return Token.IDENT;
 		}
-
-		if (isNum(this.current) || (this.current == '.' && isNum(this.next))) {
+		if (isNum(c) || (c == '.' && isNum(this.next))) {
 			this.consumeNumber();
 			return Token.NUMBER;
 		}
-
-		if (this.current == '"') {
+		if (c == '"') {
 			this.consumeQuotedString();
 			return Token.STRING;
 		}
-
-		if (this.current == '(') {
+		if (c == '(') {
 			this.consumeChar();
 			return Token.LPAREN;
 		}
-
-		if (this.current == ')') {
+		if (c == ')') {
 			this.consumeChar();
 			return Token.RPAREN;
+		}
+		if (match(c, "+-*/^")) {
+			this.consumeChar();
+			return Token.BINOP;
 		}
 
 		// else:
@@ -194,6 +193,20 @@ final class Scanner {
 			i++;
 		}
 		return consumed;
+	}
+
+	// returns true if character c occurs in pattern
+	static boolean match(int c, String pattern) {
+		if (c < 0) {
+			return false;
+		}
+		char chr = (char)(c);
+		for (int i=0; i<pattern.length(); i++) {
+			if (pattern.charAt(i) == chr) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	// append character c to stringbuilder
