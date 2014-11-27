@@ -120,8 +120,21 @@ final class Parser {
 		if (token.type == Token.IDENT) {
 			return parseIdent();
 		}
+		if (token.type == Token.LPAREN) {
+			return parseParenthesizedExpr();
+		}
 		error("expected operand, found: " + this.token);
 		return null;
+	}
+
+	// parse a parenthesized expression
+	Expr parseParenthesizedExpr() throws Bailout {
+		expect(Token.LPAREN);
+		advance();
+		Expr inside = parseExpr();
+		expect(Token.RPAREN);
+		advance();
+		return inside;
 	}
 
 	// parse identifier
