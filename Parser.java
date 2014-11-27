@@ -23,7 +23,9 @@ final class Parser {
 		try {
 			parse();
 		} catch(Bailout e) {
-			// nothing to do
+			printErrors(System.err);
+			e.printStackTrace();
+			System.exit(1);
 		}
 	}
 
@@ -35,17 +37,16 @@ final class Parser {
 
 	Node parseExprList() throws Bailout {
 		ExprList l = new ExprList(token) ;
-		for (; token.type != Token.EOF; advance()) {
+		skipEOL();
+		while (token.type != Token.EOF) {
 			l.add(parseExpr());
+			advance();
+			skipEOL();
 		}
 		return l;
 	}
 
 	Expr parseExpr() throws Bailout {
-		while (token.type == Token.EOL) {
-			advance();
-		}
-
 		if (token.type == Token.NUMBER) {
 			return parseNumber();
 		}
@@ -98,6 +99,12 @@ final class Parser {
 			this.next = this.scanner.nextToken;
 		} catch(IOException e) {
 			error(e.toString());
+		}
+	}
+
+	void skipEOL() throws Bailout {
+		while (token.type == Token.EOL) {
+			advance();
 		}
 	}
 
