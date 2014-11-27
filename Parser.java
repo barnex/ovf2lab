@@ -6,13 +6,16 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 
+// Parser transforms an input file into an Abstract Syntax Tree (AST).
 final class Parser {
+
+	public Node ast;                  // contains the AST root after successful parsing
+	public ArrayList<String> errors;  // contains syntax errors after parse error
 
 	Scanner scanner;
 	Token token, next; // current and next (peeked) token
-	Node ast;
-	ArrayList<String> errors;
 	boolean debug = false;
+
 
 	public void parseFile(String filename) throws FileNotFoundException, IOException {
 		Reader reader = new FileReader(new File(filename));
@@ -21,18 +24,24 @@ final class Parser {
 		this.next = this.scanner.nextToken;
 		this.errors = new ArrayList<String>();
 
+		// Normal parsing throws Bailout exception upon syntax error,
+		// catch it and add to errors list.
 		try {
 			parse();
 		} catch(Bailout e) {
+			// with debug: print where bailout came from
 			if (debug) {
 				printErrors(System.err);
 				e.printStackTrace();
 			}
+			// bailout without reporting an error is a bug
 			if (this.errors.size() == 0) {
 				this.errors.add("BUG: parser bailout at " + token.pos());
 				e.printStackTrace();
 				System.exit(2);
 			}
+			this.ast = null;
+			// nothing to do, errors are this.errors.
 		}
 	}
 
