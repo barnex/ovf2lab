@@ -1,4 +1,5 @@
 
+// A token holds an input file token with position information, type and (string) value.
 final class Token {
 
 	String value;  // string representation of the token
@@ -16,9 +17,12 @@ final class Token {
 	static final int CHAR = 6;
 	static final int LPAREN = 7;
 	static final int RPAREN = 8;
+
+	// maps token type to human readable description
 	static final String[] typeName = {"invalid character", "EOF", "EOL", "identifier", "number", "string", "character", "left paren", "right paren"};
 
 
+	// human readable description for token type
 	public static String typeName(int type) {
 		if (type < 0 || type >= typeName.length) {
 			return "UNKNOWN(" + type + ")";
@@ -26,6 +30,7 @@ final class Token {
 		return typeName[type];
 	}
 
+	// token file name + position
 	public String pos() {
 		return this.file + ":" + this.line + ":" + this.pos;
 	}
