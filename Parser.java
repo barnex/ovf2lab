@@ -50,7 +50,10 @@ final class Parser {
 		if (token.type == Token.NUMBER) {
 			return parseNumber();
 		}
-		if (token.type == Token.IDENT) {
+		//	if (token.type == Token.IDENT && next.type == Token.LPAREN) {
+		//		return parseCall();
+		//	}
+		if (token.type == Token.IDENT && next.type != Token.LPAREN) {
 			return parseIdent();
 		}
 

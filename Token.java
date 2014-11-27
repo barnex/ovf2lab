@@ -14,7 +14,9 @@ final class Token {
 	static final int NUMBER = 4;
 	static final int STRING = 5;
 	static final int CHAR = 6;
-	static final String[] typeName = {"INVALID", "EOF", "EOL", "IDENTIFIER", "NUMBER", "STRING", "CHAR"};
+	static final int LPAREN = 7;
+	static final int RPAREN = 8;
+	static final String[] typeName = {"INVALID", "EOF", "EOL", "IDENTIFIER", "NUMBER", "STRING", "CHAR", "LPAREN", "RPAREN"};
 
 
 	public static String typeName(int type) {

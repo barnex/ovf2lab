@@ -76,6 +76,16 @@ final class Scanner {
 			return Token.STRING;
 		}
 
+		if (this.current == '(') {
+			this.consumeChar();
+			return Token.LPAREN;
+		}
+
+		if (this.current == ')') {
+			this.consumeChar();
+			return Token.RPAREN;
+		}
+
 		// else:
 		this.consumeChar();
 		return Token.CHAR;
