@@ -76,6 +76,10 @@ final class Scanner {
 		}
 		if (match(this.current, "+-*/^")) {
 			this.consumeChar();
+			// collate +=, -=, *=, /=, ^=
+			if (this.current == '=') {
+				this.consumeChar();
+			}
 			return Token.BINOP;
 		}
 		if (match(this.current, "&|")) {
@@ -87,7 +91,7 @@ final class Scanner {
 			return Token.BINOP;
 		}
 
-		// else:
+		// else: unsupported character
 		this.consumeChar();
 		return Token.INVALID;
 	}
