@@ -185,6 +185,7 @@ final class Parser {
 		}
 	}
 
+	// scan next token but skip comments
 	Token scan() throws IOException {
 		Token t = this.scanner.next();
 		while (t.type == Token.COMMENT) {

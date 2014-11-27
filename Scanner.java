@@ -50,7 +50,7 @@ final class Scanner {
 		if (this.current == -1) {
 			return Token.EOF;
 		}
-		if (isEOL(this.current)) {
+		if (isEOL(this.current) || this.current == ';') {
 			this.consumeEOL();
 			return Token.EOL;
 		}
@@ -145,6 +145,10 @@ final class Scanner {
 		if (consumed) {
 			this.line++;
 			this.pos = 1;
+			return;
+		}
+		if (this.current == ';') {
+			this.consumeChar();
 			return;
 		}
 		panic("not at EOL");
