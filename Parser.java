@@ -62,21 +62,69 @@ final class Parser {
 		return l;
 	}
 
+	// operators ordered by precedence, for parseExpr.
+	static final String[][] precedence = {
+		{"^"},
+		{"*",  "/",  "%",  "<<",  ">>",  "&"},
+		{"+",  "-" , "|"},
+		{"==",  "!=",  "<",  "<=",  ">",  ">=" },
+		{"&&"},
+		{"||"},
+		{"=", "+=", "-=", "*=", "/=", "%=", "^="}
+	};
+
+	// parse a compound expression, honor operator precedence.
 	Expr parseExpr() throws Bailout {
+		// make list of operands and operators, left to right
+		// operators do not have children set yet.
+		ArrayList<Expr> l = new ArrayList<Expr>();
+		l.add(parseOperand());
+		while (this.token.type == Token.BINOP) {
+			l.add(new BinOp(this.token, this.token.value));
+			this.advance();
+			l.add(parseOperand());
+		}
+
+		// fast return if there's no operators
+		if (l.size() == 1) {
+			return l.get(0);
+		}
+
+		// in order of precedence, have each operator eat up his left and right neighbor
+		for (int pr=0; pr<precedence.length; pr++) {
+			for (String op: precedence[pr]) {
+				for (int i=0; i<l.size(); i++) {
+					Expr e = l.get(i);
+					if (e instanceof BinOp && ((BinOp)(e)).op.equals(op)) {
+						((BinOp)(e)).x = l.get(i-1);
+						((BinOp)(e)).y = l.get(i+1);
+						l.remove(i-1);
+						l.remove(i); //remove element i+1, now at pos i
+						i--; //
+					}
+				}
+			}
+		}
+
+		// unless precedence list is incomplete, there should be no more operators left
+		assert(l.size() == 1);
+		return l.get(0);
+	}
+
+
+	// parses operand expression, stops at binary operator (+,-,*,...)
+	Expr parseOperand() throws Bailout {
 		if (token.type == Token.NUMBER) {
 			return parseNumber();
 		}
-		//	if (token.type == Token.IDENT && next.type == Token.LPAREN) {
-		//		return parseCall();
-		//	}
-		if (token.type == Token.IDENT && next.type != Token.LPAREN) {
+		if (token.type == Token.IDENT) {
 			return parseIdent();
 		}
-
-		error("expecting expression, found: " + token);
+		error("expected operand, found: " + this.token);
 		return null;
 	}
 
+	// parse identifier
 	Expr parseIdent() throws Bailout {
 		expect(Token.IDENT);
 		Expr ident = new Ident(token, token.value);
@@ -84,6 +132,7 @@ final class Parser {
 		return ident;
 	}
 
+	// parse number
 	Expr parseNumber() throws Bailout {
 		try {
 			long v = Long.parseLong(token.value);
@@ -197,6 +246,22 @@ class ExprList extends AbsNode implements Node {
 	}
 }
 
+class BinOp extends AbsNode implements Expr, Node {
+	String op;
+	Expr x, y;
+	BinOp(Token t, String op) {
+		super(t);
+		this.op = op;
+	}
+	public void print(PrintStream out) {
+		out.print("(");
+		this.x.print(out);
+		out.print(this.op);
+		this.y.print(out);
+		out.print(")");
+	}
+}
+
 class Ident extends AbsNode implements Expr, Node {
 	String name;
 	Ident(Token t, String name) {
@@ -229,6 +294,7 @@ class FloatLit extends AbsNode implements Expr, Node {
 		out.print(this.value);
 	}
 }
+
 
 
 // Bailout is throw internally to abort parsing on a fatal error.

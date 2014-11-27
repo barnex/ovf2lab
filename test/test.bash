@@ -1,7 +1,7 @@
 fail=0;
 
 # these files should fail to parse
-for f in parse_bad/*.a2; do
+for f in bad/*.a2; do
 	echo -n ../a2 parse $f;
 	if (../a2 parse $f 2> /dev/null > /dev/null); then
 		fail=1;
@@ -13,7 +13,7 @@ done;
 
 
 # these files should parse
-for f in parse_good/*.a2; do
+for f in parse/*.a2; do
 	echo -n ../a2 parse $f;
 	if (../a2 parse $f 2> /dev/null > /dev/null); then
 		echo " OK";

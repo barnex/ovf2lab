@@ -90,10 +90,10 @@ final class Scanner {
 			this.consumeChar();
 			return Token.BINOP;
 		}
-		if(match(this.current, "<>")){
+		if(match(this.current, "<>")) {
 			this.consumeChar();
 			// collate >=, <=
-			if (this.current == '='){
+			if (this.current == '=') {
 				this.consumeChar();
 			}
 			return Token.BINOP;
