@@ -54,6 +54,10 @@ final class Scanner {
 			this.consumeEOL();
 			return Token.EOL;
 		}
+		if (this.current == '/' && this.next == '/') {
+			this.consumeLine();
+			return Token.COMMENT;
+		}
 		if (isAlpha(this.current)) {
 			this.consumeWord();
 			return Token.IDENT;
@@ -116,6 +120,15 @@ final class Scanner {
 		while (isWhitespace(this.current)) {
 			this.advance();
 		}
+	}
+
+	// consume entire line
+	void consumeLine() throws IOException {
+		// take care to properly consume both LF and CRLF endings
+		while(!isEOL(this.current)) {
+			consumeChar();
+		}
+		consumeEOL();
 	}
 
 	// consume an "\n" or "\r\n", append to token.value
