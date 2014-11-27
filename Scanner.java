@@ -28,24 +28,21 @@ final class Scanner {
 	}
 
 	// next() advances currentToken, nextToken by one token.
-	// After an EOF has been emitted, subsequent tokens are null.
 	public void next() throws IOException {
-		Token t = null;
 		this.buf.setLength(0);
 
-		if (this.current == -1 && this.next == -1) {
-			t = null;
-		} else {
-			t = new Token();
-			this.skipWhitespace();
-			int line = this.line;
-			int pos = this.pos;
-			t.type = scanToken();
-			t.value = buf.toString();
-			t.line = line;
-			t.pos = pos;
-			t.file = this.filename;
+		Token t = new Token();
+		this.skipWhitespace();
+		int line = this.line;
+		int pos = this.pos;
+		t.type = scanToken();
+		t.value = buf.toString();
+		if(t.type == Token.EOL) {
+			t.value = "\\n";
 		}
+		t.line = line;
+		t.pos = pos;
+		t.file = this.filename;
 
 		this.currentToken = nextToken;
 		this.nextToken = t;

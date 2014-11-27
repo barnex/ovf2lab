@@ -9,12 +9,15 @@ import java.util.ArrayList;
 final class Parser {
 
 	Scanner scanner;
+	Token token, next; // current and next (peeked) token
 	Node ast;
 	ArrayList<String> errors;
 
 	public void parseFile(String filename) throws FileNotFoundException, IOException {
 		Reader reader = new FileReader(new File(filename));
 		this.scanner = new Scanner(filename, reader);
+		this.token = this.scanner.currentToken;
+		this.next = this.scanner.nextToken;
 		this.errors = new ArrayList<String>();
 
 		try {
@@ -26,63 +29,75 @@ final class Parser {
 
 	// Parsing
 
-	void parse() throws Bailout{
-		this.ast = parseExpr();
+	void parse() throws Bailout {
+		this.ast = parseExprList();  // TODO: blockstmt
 	}
 
-	Node parseExpr() throws Bailout{
-		if (token().type == Token.NUMBER){
+	Node parseExprList() throws Bailout {
+		ExprList l = new ExprList(token) ;
+		for (; token.type != Token.EOF; advance()) {
+			l.add(parseExpr());
+		}
+		return l;
+	}
+
+	Expr parseExpr() throws Bailout {
+		while (token.type == Token.EOL) {
+			advance();
+		}
+
+		if (token.type == Token.NUMBER) {
 			return parseNumber();
 		}
-		
-		error("expecting expression, found: " + token());
+		if (token.type == Token.IDENT) {
+			return parseIdent();
+		}
+
+		error("expecting expression, found: " + token);
 		return null;
 	}
 
-	Node parseNumber() throws Bailout{
-		try{
-			long v = Long.parseLong(token().value);
-			return new IntLit(v);
-		}catch(NumberFormatException e){
-			// so it's not an int
-		}
-
-		try{
-			double v = Double.parseDouble(token().value);
-			return new FloatLit(v);
-		}catch(NumberFormatException e){
-			// so it's not a float
-		}
-
-		error("malformed number: " + token());
-		return null;
-	}
-
-	Node parseIdent() throws Bailout {
-		this.expect(Token.IDENT);
-		Node ident = new Ident(token());
-		this.advance();
+	Expr parseIdent() throws Bailout {
+		expect(Token.IDENT);
+		Expr ident = new Ident(token, token.value);
+		advance();
 		return ident;
 	}
 
+	Expr parseNumber() throws Bailout {
+		try {
+			long v = Long.parseLong(token.value);
+			Expr n = new IntLit(token, v);
+			advance();
+			return n;
+		} catch(NumberFormatException e) {
+			// it's not an int, try float
+		}
+
+		try {
+			double v = Double.parseDouble(token.value);
+			Expr n = new FloatLit(token, v);
+			advance();
+			return n;
+		} catch(NumberFormatException e) {
+			// it's not a float either, so it's not a valid number
+		}
+
+		error("malformed number: " + token);
+		return null;
+	}
+
+
 	// Tokenizing
-
-	// Returns the current token.
-	Token token() {
-		return this.scanner.currentToken;
-	}
-
-	// Peeks the next token.
-	Token next() {
-		return this.scanner.nextToken;
-	}
 
 	// Advances by one token.
 	void advance() throws Bailout {
 		try {
 			this.scanner.next();
+			this.token = this.scanner.currentToken;
+			this.next = this.scanner.nextToken;
 		} catch(IOException e) {
-			this.error(e.toString());
+			error(e.toString());
 		}
 	}
 
@@ -91,14 +106,14 @@ final class Parser {
 	// expect the current token to be of type tokenType,
 	// fatal error if not.
 	void expect(int tokenType) throws Bailout {
-		if (this.token().type != tokenType) {
-			this.error("expected " + Token.typeName(tokenType) + ", found: " + this.token().value);
+		if (this.token.type != tokenType) {
+			error("expected " + Token.typeName(tokenType) + ", found: " + this.token.value);
 		}
 	}
 
 	// add error with position information of current token + msg.
-	void error(String msg) throws Bailout{
-		this.errors.add(this.token().pos() + ": " + msg);
+	void error(String msg) throws Bailout {
+		this.errors.add(this.token.pos() + ": " + msg);
 		bailout();
 	}
 
@@ -121,40 +136,72 @@ interface Node {
 }
 
 abstract class AbsNode {
-	Token token;
+
+	String file;
+	int line, pos;
+
 	AbsNode(Token token) {
-		this.token = token;
+		this.file = token.file;
+		this.line = token.line;
+		this.pos = token.pos;
 	}
 }
 
-class IntLit extends AbsNode implements Node{
-	long value;
-	IntLit(long value){
-		this.value = value;
-	}
-	public void print(PrintStream out) {
-		out.println(this.value);
-	}
+interface Expr {
+	void print(PrintStream out);
+	// eval()
 }
 
-class FloatLit extends AbsNode implements Node{
-	double value;
-	FloatLit(double value){
-		this.value = value;
-	}
-	public void print(PrintStream out) {
-		out.println(this.value);
-	}
-}
-
-class Ident extends AbsNode implements Node {
-	Ident(Token t) {
+class ExprList extends AbsNode implements Node {
+	ArrayList<Expr> list;
+	public ExprList(Token t) {
 		super(t);
+		this.list = new ArrayList<Expr>();
+	}
+	void add(Expr e) {
+		this.list.add(e);
 	}
 	public void print(PrintStream out) {
-		out.println(super.token.value);
+		for(Expr e: this.list) {
+			e.print(out);
+			out.println();
+		}
 	}
 }
+
+class Ident extends AbsNode implements Expr, Node {
+	String name;
+	Ident(Token t, String name) {
+		super(t);
+		this.name = name;
+	}
+	public void print(PrintStream out) {
+		out.print(this.name);
+	}
+}
+
+class IntLit extends AbsNode implements Expr, Node {
+	long value;
+	IntLit(Token t, long value) {
+		super(t);
+		this.value = value;
+	}
+	public void print(PrintStream out) {
+		out.print(this.value);
+	}
+}
+
+class FloatLit extends AbsNode implements Expr, Node {
+	double value;
+	FloatLit(Token t, double value) {
+		super(t);
+		this.value = value;
+	}
+	public void print(PrintStream out) {
+		out.print(this.value);
+	}
+}
+
 
 // Bailout is throw internally to abort parsing on a fatal error.
 final class Bailout extends Throwable {

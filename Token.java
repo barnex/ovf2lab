@@ -1,10 +1,10 @@
 
 final class Token {
 
-	String value; // string representation of the token
-	int type;     // token type
-	String file;  // file token appeared in
-	int line, pos;      // positions in file
+	String value;  // string representation of the token
+	int type;      // token type
+	String file;   // file token appeared in
+	int line, pos; // positions in file
 
 	// token types
 	static final int INVALID = 0;
@@ -14,7 +14,7 @@ final class Token {
 	static final int NUMBER = 4;
 	static final int STRING = 5;
 	static final int CHAR = 6;
-	static final String[] typeName = {"INVALID", "EOF", "EOL", "IDENT", "NUMBER", "STRING", "CHAR"};
+	static final String[] typeName = {"INVALID", "EOF", "EOL", "IDENTIFIER", "NUMBER", "STRING", "CHAR"};
 
 
 	public static String typeName(int type) {
@@ -29,6 +29,6 @@ final class Token {
 	}
 
 	public String toString() {
-		return this.pos() + ": " + Token.typeName(this.type) + ":" + this.value;
+		return Token.typeName(this.type) + ":" + this.value;
 	}
 }
