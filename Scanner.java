@@ -78,6 +78,14 @@ final class Scanner {
 			this.consumeChar();
 			return Token.BINOP;
 		}
+		if (match(this.current, "&|")) {
+			// collate &&, ||
+			if(this.current == this.next) {
+				this.consumeChar();
+			}
+			this.consumeChar();
+			return Token.BINOP;
+		}
 
 		// else:
 		this.consumeChar();
