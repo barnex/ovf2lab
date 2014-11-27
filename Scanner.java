@@ -25,20 +25,20 @@ final class Scanner {
 
 	// next() advances currentToken, nextToken by one token.
 	public Token next() throws IOException {
-		this.buf.setLength(0);
-		Token t = new Token();
-
 		this.skipWhitespace();
-		int line = this.line;
-		int pos = this.pos;
+
+		Token t = new Token();
+		t.line = this.line;
+		t.pos = this.pos;
+		t.file = this.filename;
+
+		this.buf.setLength(0);
 		t.type = scanToken();
+
 		t.value = buf.toString();
 		if(t.type == Token.EOL) {
 			t.value = "\\n";
 		}
-		t.line = line;
-		t.pos = pos;
-		t.file = this.filename;
 
 		return t;
 	}
@@ -47,35 +47,34 @@ final class Scanner {
 	// append value to buf but not yet to token.value.
 	// returns the token type.
 	int scanToken() throws IOException {
-		int c = this.current;
-		if (c == -1) {
+		if (this.current == -1) {
 			return Token.EOF;
 		}
-		if (isEOL(c)) {
+		if (isEOL(this.current)) {
 			this.consumeEOL();
 			return Token.EOL;
 		}
-		if (isAlpha(c)) {
+		if (isAlpha(this.current)) {
 			this.consumeWord();
 			return Token.IDENT;
 		}
-		if (isNum(c) || (c == '.' && isNum(this.next))) {
+		if (isNum(this.current) || (this.current == '.' && isNum(this.next))) {
 			this.consumeNumber();
 			return Token.NUMBER;
 		}
-		if (c == '"') {
+		if (this.current == '"') {
 			this.consumeQuotedString();
 			return Token.STRING;
 		}
-		if (c == '(') {
+		if (this.current == '(') {
 			this.consumeChar();
 			return Token.LPAREN;
 		}
-		if (c == ')') {
+		if (this.current == ')') {
 			this.consumeChar();
 			return Token.RPAREN;
 		}
-		if (match(c, "+-*/^")) {
+		if (match(this.current, "+-*/^")) {
 			this.consumeChar();
 			return Token.BINOP;
 		}
@@ -239,10 +238,7 @@ final class Scanner {
 
 	// is c whitespace?
 	static boolean isWhitespace(int c) {
-		if (c == -1 || c == '\r' || c == '\n') {
-			return false;
-		}
-		return Character.isWhitespace((char)(c));
+		return match(c, " \t");
 	}
 
 	// is c a linebreak?

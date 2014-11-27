@@ -30,12 +30,19 @@ public final class A2 {
 			Reader r = new FileReader(new File(f));
 			Scanner s = new Scanner(f, r);
 			for (Token t = s.next(); t.type != Token.EOF; t = s.next()) {
-				System.out.println(t.pos() + "\t" + Token.typeName(t.type) + ":\t" +  t.value);
-				s.next();
+				System.out.println(t.pos() + "\t" + typeName(t.type) + ":\t" +  t.value);
 			}
 			Token t = s.next();
-			System.out.println(t.pos() + "\t" + Token.typeName(t.type) + ":\t" +  t.value);
+			System.out.println(t.pos() + "\t" + typeName(t.type) + ":\t" +  t.value);
 		}
+	}
+
+	static String typeName(int tokenType) {
+		String s = Token.typeName(tokenType);
+		while (s.length() < 20) {
+			s = s + " ";
+		}
+		return s;
 	}
 
 	// main for parsing files
