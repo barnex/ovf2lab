@@ -4,56 +4,11 @@
 1+2*3/4
 1+2*3/4^5
 
-1
-1 +2
-1 +2 *3
-1 +2 *3 /4
-1 +2 *3 /4 ^5
-
-
-1
-1+ 2
-1+ 2* 3
-1+ 2* 3/ 4
-1+ 2* 3/ 4^ 5
-
-1
-1 + 2
-1 + 2 * 3
-1 + 2 * 3 / 4
-1 + 2 * 3 / 4 ^ 5
-
-a
-a+b
-a+b*c
-a+b*c/d
-a+b*c/d^e
-
-a
-a +b
-a +b *c
-a +b *c /d
-a +b *c /d ^e
-
-
-a
-a+ b
-a+ b* c
-a+ b* c/ d
-a+ b* c/ d^ e
-
-a
-a + b
-a + b * c
-a + b * c / d
-a + b * c / d ^ e
-
-
-a2
-a2 + b2
-a2 + b2 * c2
-a2 + b2 * c2 / d2
-a2 + b2 * c2 / d2 ^ e2
+aa
+aa + bb
+aa + bb * cc
+aa + bb * cc / dd
+aa + bb * cc / dd ^ ee
 
 a&b
 a&&b
@@ -64,4 +19,9 @@ a+=b
 a-=b
 a/=b
 a*=b
+a%=b
 a^=b
+a>b
+a<b
+a>=b
+a<=b

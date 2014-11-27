@@ -74,7 +74,7 @@ final class Scanner {
 			this.consumeChar();
 			return Token.RPAREN;
 		}
-		if (match(this.current, "+-*/^")) {
+		if (match(this.current, "+-*/%^")) {
 			this.consumeChar();
 			// collate +=, -=, *=, /=, ^=
 			if (this.current == '=') {
@@ -82,12 +82,20 @@ final class Scanner {
 			}
 			return Token.BINOP;
 		}
-		if (match(this.current, "&|")) {
-			// collate &&, ||
+		if (match(this.current, "&|=")) {
+			// collate &&, ||, ==
 			if(this.current == this.next) {
 				this.consumeChar();
 			}
 			this.consumeChar();
+			return Token.BINOP;
+		}
+		if(match(this.current, "<>")){
+			this.consumeChar();
+			// collate >=, <=
+			if (this.current == '='){
+				this.consumeChar();
+			}
 			return Token.BINOP;
 		}
 
