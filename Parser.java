@@ -12,6 +12,7 @@ final class Parser {
 	Token token, next; // current and next (peeked) token
 	Node ast;
 	ArrayList<String> errors;
+	boolean debug = false;
 
 	public void parseFile(String filename) throws FileNotFoundException, IOException {
 		Reader reader = new FileReader(new File(filename));
@@ -23,9 +24,15 @@ final class Parser {
 		try {
 			parse();
 		} catch(Bailout e) {
-			printErrors(System.err);
-			e.printStackTrace();
-			System.exit(1);
+			if (debug) {
+				printErrors(System.err);
+				e.printStackTrace();
+			}
+			if (this.errors.size() == 0) {
+				this.errors.add("BUG: parser bailout at " + token.pos());
+				e.printStackTrace();
+				System.exit(2);
+			}
 		}
 	}
 

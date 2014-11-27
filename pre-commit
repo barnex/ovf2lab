@@ -1,1 +1,2 @@
-asytle --style=java *.java
+astyle --style=java *.java
+make && (cd test && ./test.bash)

@@ -39,16 +39,19 @@ public final class A2 {
 
 	// main for parsing files
 	static void mainParse(String[] args) throws Throwable {
+		int status = 0;
 		for (int i=1; i<args.length; i++) {
 			String f = args[i];
 			Parser p = new Parser();
 			p.parseFile(f);
 			if (p.errors.size() > 0) {
 				p.printErrors(System.out);
+				status = 1;
 			} else if (p.ast != null) {
 				p.ast.print(System.out);
 			}
 		}
+		System.exit(status);
 	}
 
 	static void badUsage() {

@@ -16,7 +16,7 @@ final class Token {
 	static final int CHAR = 6;
 	static final int LPAREN = 7;
 	static final int RPAREN = 8;
-	static final String[] typeName = {"INVALID", "EOF", "EOL", "IDENTIFIER", "NUMBER", "STRING", "CHAR", "LPAREN", "RPAREN"};
+	static final String[] typeName = {"invalid character", "EOF", "EOL", "identifier", "number", "string", "character", "left paren", "right paren"};
 
 
 	public static String typeName(int type) {
@@ -31,6 +31,6 @@ final class Token {
 	}
 
 	public String toString() {
-		return Token.typeName(this.type) + ":" + this.value;
+		return Token.typeName(this.type) + ": " + this.value;
 	}
 }
