@@ -56,7 +56,7 @@ final class Parser {
 		skipEOL();
 		while (token.type != Token.EOF) {
 			l.add(parseExpr());
-			advance();
+			expect(Token.EOL);
 			skipEOL();
 		}
 		return l;
