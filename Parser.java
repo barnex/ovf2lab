@@ -20,8 +20,8 @@ final class Parser {
 	public void parseFile(String filename) throws FileNotFoundException, IOException {
 		Reader reader = new FileReader(new File(filename));
 		this.scanner = new Scanner(filename, reader);
-		this.token = this.scanner.currentToken;
-		this.next = this.scanner.nextToken;
+		this.token = this.scanner.next();
+		this.next = this.scanner.next();
 		this.errors = new ArrayList<String>();
 
 		// Normal parsing throws Bailout exception upon syntax error,
@@ -113,9 +113,8 @@ final class Parser {
 	// Advances by one token.
 	void advance() throws Bailout {
 		try {
-			this.scanner.next();
-			this.token = this.scanner.currentToken;
-			this.next = this.scanner.nextToken;
+			this.token = this.next;
+			this.next = this.scanner.next();
 		} catch(IOException e) {
 			error(e.toString());
 		}

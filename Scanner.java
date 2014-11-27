@@ -5,8 +5,6 @@ import java.lang.Character;
 // Scanner tokenizes input text.
 final class Scanner {
 
-	public Token currentToken, nextToken; // current and next (peeked) token.
-
 	Reader in;         // input stream
 	String filename;   // file name to document token position
 	int line, pos;     // token line and position in file
@@ -23,15 +21,13 @@ final class Scanner {
 		this.advance();
 		this.pos = 1;
 		this.line = 1;
-		this.next();   // set up currentToken, nextToken
-		this.next();
 	}
 
 	// next() advances currentToken, nextToken by one token.
-	public void next() throws IOException {
+	public Token next() throws IOException {
 		this.buf.setLength(0);
-
 		Token t = new Token();
+
 		this.skipWhitespace();
 		int line = this.line;
 		int pos = this.pos;
@@ -44,8 +40,7 @@ final class Scanner {
 		t.pos = pos;
 		t.file = this.filename;
 
-		this.currentToken = nextToken;
-		this.nextToken = t;
+		return t;
 	}
 
 	// scan the token staring at current position,

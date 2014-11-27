@@ -29,11 +29,12 @@ public final class A2 {
 			String f = args[i];
 			Reader r = new FileReader(new File(f));
 			Scanner s = new Scanner(f, r);
-			while (s.currentToken.type != Token.EOF) {
-				System.out.println(s.currentToken.pos() + "\t" + Token.typeName(s.currentToken.type) + ":\t" +  s.currentToken.value);
+			for (Token t = s.next(); t.type != Token.EOF; t = s.next()) {
+				System.out.println(t.pos() + "\t" + Token.typeName(t.type) + ":\t" +  t.value);
 				s.next();
 			}
-			System.out.println(s.currentToken.pos() + "\t" + Token.typeName(s.currentToken.type) + ":\t" +  s.currentToken.value);
+			Token t = s.next();
+			System.out.println(t.pos() + "\t" + Token.typeName(t.type) + ":\t" +  t.value);
 		}
 	}
 
