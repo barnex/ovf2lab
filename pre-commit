@@ -1,2 +1,1 @@
-astyle --style=java *.java
-make && (cd test && ./test.bash)
+make && (cd test && ./test.bash && echo "Unit tests passed") || (echo; echo "Unit tests FAILED"; exit 1);

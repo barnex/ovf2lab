@@ -38,4 +38,5 @@ final class Token {
 	public String toString() {
 		return Token.typeName(this.type) + ": " + this.value;
 	}
+
 }
