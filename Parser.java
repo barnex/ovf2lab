@@ -103,6 +103,9 @@ final class Parser {
 		} catch(IOException e) {
 			error(e.toString());
 		}
+		if (token.type == Token.INVALID) {
+			error("invalid character: " + token.value);
+		}
 	}
 
 	void skipEOL() throws Bailout {

@@ -88,7 +88,7 @@ final class Scanner {
 
 		// else:
 		this.consumeChar();
-		return Token.CHAR;
+		return Token.INVALID;
 	}
 
 	// advances current and next characters by one.
