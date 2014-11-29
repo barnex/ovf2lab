@@ -54,6 +54,21 @@ class AssignStmt extends AbsNode implements Node {
 	}
 }
 
+// Postfix statement "lhs op", e.g.: a++
+class PostfixStmt extends AbsNode implements Node {
+	String op;
+	Node lhs;
+	PostfixStmt(Token t, Node lhs, String op) {
+		super(t);
+		this.lhs = lhs;
+		this.op = op;
+	}
+	public void print(PrintStream out) {
+		this.lhs.print(out);
+		out.print(this.op);
+	}
+}
+
 // Binary operator" x op y", e.g.: a + b
 class BinOp extends AbsNode implements Node {
 	String op;

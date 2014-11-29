@@ -70,12 +70,16 @@ final class Parser {
 		if (this.token.type == Token.ASSIGN) {
 			AssignStmt ass = new AssignStmt(this.token, this.token.value);
 			ass.lhs = expr;
-			advance();
+			advance(); // consume operator
 			ass.rhs = parseExpr();
 			return ass;
-		} else {
-			return expr;
 		}
+		if (this.token.type == Token.POSTFIX) {
+			PostfixStmt s = new PostfixStmt(this.token, expr, this.token.value);
+			advance(); // consume postfix operator
+			return s;
+		}
+		return expr;
 	}
 
 	// parse a compound expression, honor operator precedence.
