@@ -78,7 +78,7 @@ final class Scanner {
 			this.consumeChar();
 			return Token.RPAREN;
 		}
-		if (this.current == '=') {
+		if (this.current == '=' && this.next != '=') {
 			this.consumeChar();
 			return Token.ASSIGN;
 		}
