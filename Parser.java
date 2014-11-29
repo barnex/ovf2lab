@@ -14,7 +14,7 @@ final class Parser {
 
 	Scanner scanner;
 	Token token, next; // current and next (peeked) token
-	boolean debug = false;
+	boolean debug = true;
 
 
 	public void parseFile(String filename) throws FileNotFoundException, IOException {
@@ -47,30 +47,36 @@ final class Parser {
 
 	// Parsing
 
+	// parse the entire file
 	void parse() throws Bailout {
-		this.ast = parseExprList();  // TODO: blockstmt
+		this.ast = parseBlockStmt();
 	}
 
-	Node parseExprList() throws Bailout {
-		ExprList l = new ExprList(token) ;
+	// parse a block statement
+	Node parseBlockStmt() throws Bailout {
+		BlockStmt l = new BlockStmt(token) ;
 		skipEOL();
 		while (token.type != Token.EOF) {
-			l.add(parseExpr());
+			l.add(parseStmt());
 			expect(Token.EOL);
 			skipEOL();
 		}
 		return l;
 	}
 
-	// operators ordered by precedence, for parseExpr.
-	static final String[][] precedence = {
-		{"^"},
-		{"*",  "/",  "%",  "<<",  ">>",  "&"},
-		{"+",  "-" , "|"},
-		{"==",  "!=",  "<",  "<=",  ">",  ">=" },
-		{"&&"},
-		{"||"}
-	};
+	// parse a statement
+	Node parseStmt() throws Bailout {
+		Node expr = parseExpr();
+		if (this.token.type == Token.ASSIGN) {
+			AssignStmt ass = new AssignStmt(this.token, this.token.value);
+			ass.lhs = expr;
+			advance();
+			ass.rhs = parseExpr();
+			return ass;
+		} else {
+			return expr;
+		}
+	}
 
 	// parse a compound expression, honor operator precedence.
 	Node parseExpr() throws Bailout {
@@ -109,6 +115,17 @@ final class Parser {
 		assert(l.size() == 1);
 		return l.get(0);
 	}
+
+	// operators ordered by precedence, for parseExpr.
+	static final String[][] precedence = {
+		{"^"},
+		{"*",  "/",  "%",  "<<",  ">>",  "&"},
+		{"+",  "-" , "|"},
+		{"==",  "!=",  "<",  "<=",  ">",  ">=" },
+		{"&&"},
+		{"||"}
+	};
+
 
 
 	// parses operand expression, stops at binary operator (+,-,*,...)

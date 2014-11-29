@@ -8,6 +8,7 @@ interface Node {
 	void print(PrintStream out);
 }
 
+// Abstract node base class provides position information
 abstract class AbsNode {
 
 	String file;
@@ -20,9 +21,10 @@ abstract class AbsNode {
 	}
 }
 
-class ExprList extends AbsNode implements Node {
+// Block statement: list of statements separated by EOLs.
+class BlockStmt extends AbsNode implements Node {
 	ArrayList<Node> list;
-	public ExprList(Token t) {
+	public BlockStmt(Token t) {
 		super(t);
 		this.list = new ArrayList<Node>();
 	}
@@ -37,6 +39,22 @@ class ExprList extends AbsNode implements Node {
 	}
 }
 
+// Assign statement "lhs op rhs", e.g.: a += b
+class AssignStmt extends AbsNode implements Node {
+	String op;
+	Node lhs, rhs;
+	AssignStmt(Token t, String op) {
+		super(t);
+		this.op = op;
+	}
+	public void print(PrintStream out) {
+		this.lhs.print(out);
+		out.print(this.op);
+		this.rhs.print(out);
+	}
+}
+
+// Binary operator" x op y", e.g.: a + b
 class BinOp extends AbsNode implements Node {
 	String op;
 	Node x, y;
@@ -53,6 +71,7 @@ class BinOp extends AbsNode implements Node {
 	}
 }
 
+// Identifier, e.g.: "sin"
 class Ident extends AbsNode implements Node {
 	String name;
 	Ident(Token t, String name) {
@@ -64,6 +83,7 @@ class Ident extends AbsNode implements Node {
 	}
 }
 
+// Integer literal, e.g.: "123"
 class IntLit extends AbsNode implements Node {
 	long value;
 	IntLit(Token t, long value) {
@@ -75,6 +95,7 @@ class IntLit extends AbsNode implements Node {
 	}
 }
 
+// Float literal, e.g.: "123e45"
 class FloatLit extends AbsNode implements  Node {
 	double value;
 	FloatLit(Token t, double value) {
