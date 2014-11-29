@@ -19,7 +19,8 @@ final class Token {
 	static final int RPAREN = 8;
 	static final int BINOP = 9;
 	static final int ASSIGN = 10;
-	static final int COMMENT = 11;
+	static final int POSTFIX = 11;
+	static final int COMMENT = 12;
 
 	// maps token type to human readable description
 	static final String[] typeName = {"invalid character",
@@ -33,6 +34,7 @@ final class Token {
 	                                  "right paren",
 	                                  "binary operator",
 	                                  "assignment",
+	                                  "postfix",
 	                                  "comment"
 	                                 };
 

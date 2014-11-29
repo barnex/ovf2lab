@@ -47,69 +47,99 @@ final class Scanner {
 	// append value to buf but not yet to token.value.
 	// returns the token type.
 	int scanToken() throws IOException {
-		if (this.current == -1) {
+		// EOF
+		if (current == -1) {
 			return Token.EOF;
 		}
-		if (isEOL(this.current) || this.current == ';') {
-			this.consumeEOL();
+		// EOL
+		if (isEOL(current) || current == ';') {
+			consumeEOL();
 			return Token.EOL;
 		}
-		if (this.current == '/' && this.next == '/') {
-			this.consumeLine();
+		// slash slash comment
+		if (current == '/' && next == '/') {
+			consumeLine();
 			return Token.COMMENT;
 		}
-		if (isAlpha(this.current)) {
-			this.consumeWord();
+		// identifier
+		if (isAlpha(current)) {
+			consumeWord();
 			return Token.IDENT;
 		}
-		if (isNum(this.current) || (this.current == '.' && isNum(this.next))) {
-			this.consumeNumber();
+		// number literal
+		if (isNum(current) || (current == '.' && isNum(next))) {
+			consumeNumber();
 			return Token.NUMBER;
 		}
-		if (this.current == '"') {
-			this.consumeQuotedString();
+		// string literal
+		if (current == '"') {
+			consumeQuotedString();
 			return Token.STRING;
 		}
-		if (this.current == '(') {
-			this.consumeChar();
+		// parenthesis
+		if (current == '(') {
+			consumeChar();
 			return Token.LPAREN;
 		}
-		if (this.current == ')') {
-			this.consumeChar();
+		if (current == ')') {
+			consumeChar();
 			return Token.RPAREN;
 		}
-		if (this.current == '=' && this.next != '=') {
-			this.consumeChar();
+		// assign: =
+		if (current == '=' && next != '=') {
+			consumeChar();
 			return Token.ASSIGN;
 		}
-		if (match(this.current, "+-*/%^")) {
-			this.consumeChar();
-			// collate +=, -=, *=, /=, ^=
-			if (this.current == '=') {
-				this.consumeChar();
-				return Token.ASSIGN;
-			}
+		// binop ==
+		if (current == '=' && next == '=') {
+			consumeChar();
+			consumeChar();
 			return Token.BINOP;
 		}
-		if (match(this.current, "&|=")) {
+		// binop !=
+		if (current == '!' && next == '=') {
+			consumeChar();
+			consumeChar();
+			return Token.ASSIGN;
+		}
+		// assign: +=, -=, *=, /=, %=, ^=
+		if (match(current, "+-*/%^") && next == '=') {
+			consumeChar();
+			consumeChar();
+			return Token.ASSIGN;
+		}
+		// postfix: ++, --
+		if (match(current, "+-") && (next == current)) {
+			consumeChar();
+			consumeChar();
+			return Token.POSTFIX;
+		}
+		// bin ops: +, -, *, /, %, ^
+		if (match(current, "+-*/%^") && next != '=') {
+			consumeChar();
+			return Token.BINOP;
+		}
+		// bin ops: &, |, &&, ||
+		if (match(current, "&|")) {
 			// collate &&, ||, ==
-			if(this.current == this.next) {
-				this.consumeChar();
+			if(current == next) {
+				consumeChar();
 			}
-			this.consumeChar();
+			consumeChar();
 			return Token.BINOP;
 		}
-		if(match(this.current, "<>")) {
-			this.consumeChar();
+		// bin ops: <, >, >=, <=
+		if(match(current, "<>")) {
+			consumeChar();
 			// collate >=, <=
-			if (this.current == '=') {
-				this.consumeChar();
+			if (current == '=') {
+				consumeChar();
 			}
 			return Token.BINOP;
 		}
 
 		// else: unsupported character
-		this.consumeChar();
+		consumeChar();
 		return Token.INVALID;
 	}
 
