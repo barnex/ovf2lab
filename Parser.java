@@ -172,6 +172,7 @@ final class Parser {
 
 		ArrayList<Node>args = new ArrayList<Node>();
 
+		// TODO: a bit messy, could use a re-write
 		for (;;) {
 			if (this.token.type == Token.RPAREN) {
 				advance();
@@ -185,6 +186,9 @@ final class Parser {
 			if (token.type != Token.RPAREN) {
 				expect(Token.COMMA);
 				advance();
+				if(token.type == Token.RPAREN) {
+					error("unexpected )");
+				}
 			}
 		}
 	}

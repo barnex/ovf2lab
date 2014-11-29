@@ -7,7 +7,7 @@ for f in bad/*.a2; do
 		fail=1;
 		echo " FAIL: did not return error";
 	else
-		echo " OK: properly returned error";
+		echo " OK";
 	fi;
 done;
 
