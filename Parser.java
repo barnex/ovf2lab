@@ -146,14 +146,47 @@ final class Parser {
 		if (token.type == Token.NUMBER) {
 			return parseNumber();
 		}
+		Node expr = null;
 		if (token.type == Token.IDENT) {
-			return parseIdent();
+			expr = parseIdent();
+		} else if (token.type == Token.LPAREN) {
+			expr = parseParenthesizedExpr();
 		}
-		if (token.type == Token.LPAREN) {
-			return parseParenthesizedExpr();
+
+		// append successive function calls, e.g.: f(a)(b)(c)
+		while (token.type == Token.LPAREN) {
+			CallExpr call = new CallExpr(this.token, expr);
+			call.args = parseArgList();
+			expr = call;
 		}
-		error("expected operand, found: " + this.token);
-		return null;
+		if (expr == null) {
+			error("expected operand, found: " + this.token);
+		}
+		return expr;
+	}
+
+	// parse argument list (arg1, arg2, ...)
+	Node[] parseArgList() throws Bailout {
+		expect(Token.LPAREN);
+		advance();
+
+		ArrayList<Node>args = new ArrayList<Node>();
+
+		for (;;) {
+			if (this.token.type == Token.RPAREN) {
+				advance();
+				Node[] a = new Node[args.size()];
+				for(int i=0; i<a.length; i++) {
+					a[i]=args.get(i);
+				}
+				return a;
+			}
+			args.add(parseExpr());
+			if (token.type != Token.RPAREN) {
+				expect(Token.COMMA);
+				advance();
+			}
+		}
 	}
 
 	// parse a parenthesized expression

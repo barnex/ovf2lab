@@ -85,6 +85,11 @@ final class Scanner {
 			consumeChar();
 			return Token.RPAREN;
 		}
+		// comma
+		if (current == ',') {
+			consumeChar();
+			return Token.COMMA;
+		}
 		// assign: =
 		if (current == '=' && next != '=') {
 			consumeChar();

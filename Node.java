@@ -69,6 +69,27 @@ class PostfixStmt extends AbsNode implements Node {
 	}
 }
 
+// Call expression: f(arg1, arg2, ...)
+class CallExpr extends AbsNode implements Node {
+	Node f;
+	Node[] args;
+	CallExpr(Token t, Node f) {
+		super(t);
+		this.f = f;
+	}
+	public void print(PrintStream out) {
+		this.f.print(out);
+		out.print("(");
+		for(int i=0; i<this.args.length; i++) {
+			if (i>0) {
+				out.print(", ");
+			}
+			this.args[i].print(out);
+		}
+		out.print(")");
+	}
+}
+
 // Binary operator" x op y", e.g.: a + b
 class BinOp extends AbsNode implements Node {
 	String op;
