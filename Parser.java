@@ -69,8 +69,7 @@ final class Parser {
 		{"+",  "-" , "|"},
 		{"==",  "!=",  "<",  "<=",  ">",  ">=" },
 		{"&&"},
-		{"||"},
-		{"=", "+=", "-=", "*=", "/=", "%=", "^="}
+		{"||"}
 	};
 
 	// parse a compound expression, honor operator precedence.

@@ -78,11 +78,16 @@ final class Scanner {
 			this.consumeChar();
 			return Token.RPAREN;
 		}
+		if (this.current == '=') {
+			this.consumeChar();
+			return Token.ASSIGN;
+		}
 		if (match(this.current, "+-*/%^")) {
 			this.consumeChar();
 			// collate +=, -=, *=, /=, ^=
 			if (this.current == '=') {
 				this.consumeChar();
+				return Token.ASSIGN;
 			}
 			return Token.BINOP;
 		}
