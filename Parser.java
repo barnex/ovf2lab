@@ -74,10 +74,10 @@ final class Parser {
 	};
 
 	// parse a compound expression, honor operator precedence.
-	Expr parseExpr() throws Bailout {
+	Node parseExpr() throws Bailout {
 		// make list of operands and operators, left to right
 		// operators do not have children set yet.
-		ArrayList<Expr> l = new ArrayList<Expr>();
+		ArrayList<Node> l = new ArrayList<Node>();
 		l.add(parseOperand());
 		while (this.token.type == Token.BINOP) {
 			l.add(new BinOp(this.token, this.token.value));
@@ -94,7 +94,7 @@ final class Parser {
 		for (int pr=0; pr<precedence.length; pr++) {
 			for (String op: precedence[pr]) {
 				for (int i=0; i<l.size(); i++) {
-					Expr e = l.get(i);
+					Node e = l.get(i);
 					if (e instanceof BinOp && ((BinOp)(e)).op.equals(op)) {
 						((BinOp)(e)).x = l.get(i-1);
 						((BinOp)(e)).y = l.get(i+1);
@@ -113,7 +113,7 @@ final class Parser {
 
 
 	// parses operand expression, stops at binary operator (+,-,*,...)
-	Expr parseOperand() throws Bailout {
+	Node parseOperand() throws Bailout {
 		if (token.type == Token.NUMBER) {
 			return parseNumber();
 		}
@@ -128,28 +128,28 @@ final class Parser {
 	}
 
 	// parse a parenthesized expression
-	Expr parseParenthesizedExpr() throws Bailout {
+	Node parseParenthesizedExpr() throws Bailout {
 		expect(Token.LPAREN);
 		advance();
-		Expr inside = parseExpr();
+		Node inside = parseExpr();
 		expect(Token.RPAREN);
 		advance();
 		return inside;
 	}
 
 	// parse identifier
-	Expr parseIdent() throws Bailout {
+	Node parseIdent() throws Bailout {
 		expect(Token.IDENT);
-		Expr ident = new Ident(token, token.value);
+		Node ident = new Ident(token, token.value);
 		advance();
 		return ident;
 	}
 
 	// parse number
-	Expr parseNumber() throws Bailout {
+	Node parseNumber() throws Bailout {
 		try {
 			long v = Long.parseLong(token.value);
-			Expr n = new IntLit(token, v);
+			Node n = new IntLit(token, v);
 			advance();
 			return n;
 		} catch(NumberFormatException e) {
@@ -158,7 +158,7 @@ final class Parser {
 
 		try {
 			double v = Double.parseDouble(token.value);
-			Expr n = new FloatLit(token, v);
+			Node n = new FloatLit(token, v);
 			advance();
 			return n;
 		} catch(NumberFormatException e) {

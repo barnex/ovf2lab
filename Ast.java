@@ -20,31 +20,26 @@ abstract class AbsNode {
 	}
 }
 
-interface Expr {
-	void print(PrintStream out);
-	// eval()
-}
-
 class ExprList extends AbsNode implements Node {
-	ArrayList<Expr> list;
+	ArrayList<Node> list;
 	public ExprList(Token t) {
 		super(t);
-		this.list = new ArrayList<Expr>();
+		this.list = new ArrayList<Node>();
 	}
-	void add(Expr e) {
+	void add(Node e) {
 		this.list.add(e);
 	}
 	public void print(PrintStream out) {
-		for(Expr e: this.list) {
+		for(Node e: this.list) {
 			e.print(out);
 			out.println();
 		}
 	}
 }
 
-class BinOp extends AbsNode implements Expr, Node {
+class BinOp extends AbsNode implements Node {
 	String op;
-	Expr x, y;
+	Node x, y;
 	BinOp(Token t, String op) {
 		super(t);
 		this.op = op;
@@ -58,7 +53,7 @@ class BinOp extends AbsNode implements Expr, Node {
 	}
 }
 
-class Ident extends AbsNode implements Expr, Node {
+class Ident extends AbsNode implements Node {
 	String name;
 	Ident(Token t, String name) {
 		super(t);
@@ -69,7 +64,7 @@ class Ident extends AbsNode implements Expr, Node {
 	}
 }
 
-class IntLit extends AbsNode implements Expr, Node {
+class IntLit extends AbsNode implements Node {
 	long value;
 	IntLit(Token t, long value) {
 		super(t);
@@ -80,7 +75,7 @@ class IntLit extends AbsNode implements Expr, Node {
 	}
 }
 
-class FloatLit extends AbsNode implements Expr, Node {
+class FloatLit extends AbsNode implements  Node {
 	double value;
 	FloatLit(Token t, double value) {
 		super(t);
