@@ -90,6 +90,8 @@ final class Parser {
 			l.add(parseOperand());
 		}
 
+		assert((l.size()-1)%2 == 0);
+
 		// fast return if there's no operators
 		if (l.size() == 1) {
 			return l.get(0);
@@ -97,15 +99,22 @@ final class Parser {
 
 		// in order of precedence, have each operator eat up his left and right neighbor
 		for (int pr=0; pr<precedence.length; pr++) {
-			for (String op: precedence[pr]) {
-				for (int i=0; i<l.size(); i++) {
-					Node e = l.get(i);
-					if (e instanceof BinOp && ((BinOp)(e)).op.equals(op)) {
-						((BinOp)(e)).x = l.get(i-1);
-						((BinOp)(e)).y = l.get(i+1);
+			for (int i=0; i<l.size(); i++) {
+				Node e = l.get(i);
+				if (!(e instanceof BinOp)) {
+					continue;
+				}
+				BinOp b = (BinOp)(e);
+				if (b.x != null) { // binop already connected
+					continue;
+				}
+				for (String op: precedence[pr]) {
+					if (b.op.equals(op)) {
+						b.x = l.get(i-1);
+						b.y = l.get(i+1);
 						l.remove(i-1);
 						l.remove(i); //remove element i+1, now at pos i
-						i--; //
+						i=0; // TODO: backtrack
 					}
 				}
 			}
