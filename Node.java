@@ -136,8 +136,13 @@ class BinOp extends AbsNode implements Node {
 			long val = intOp(((IntLit)x).val, op, ((IntLit)y).val);
 			return new IntLit(val);
 		}
+		if(x instanceof NumLit && y instanceof NumLit) {
+			double val = floatOp( ((NumLit)x).value(), op, ((NumLit)y).value() );
+			return new FloatLit(val);
+		}
 		return this;
 	}
+	// used for compile-time evaluation of (int op int)
 	static long intOp(long x, String op, long y) {
 		if (op.equals("+")) {
 			return x+y;
@@ -162,6 +167,26 @@ class BinOp extends AbsNode implements Node {
 		}
 		throw new IllegalStateException("unknown op " + op);
 	}
+	// used for compile-time evaluation of (num op num)
+	// where at least one number is float
+	static double floatOp(double x, String op, double y) {
+		if (op.equals("+")) {
+			return x+y;
+		}
+		if (op.equals("-")) {
+			return x-y;
+		}
+		if (op.equals("*")) {
+			return x*y;
+		}
+		if (op.equals("/")) {
+			return x/y;
+		}
+		if (op.equals("%")) {
+			return x%y;
+		}
+		throw new IllegalStateException("unknown op " + op);
+	}
 }
 
 // Identifier, e.g.: "sin"
@@ -180,7 +205,7 @@ class Ident extends AbsNode implements Node {
 }
 
 // Integer literal, e.g.: "123"
-class IntLit extends AbsNode implements Node {
+class IntLit extends AbsNode implements Node, NumLit {
 	long val;
 	IntLit(Token t, long val) {
 		super(t);
@@ -196,10 +221,13 @@ class IntLit extends AbsNode implements Node {
 	public Node simplify() {
 		return this;
 	}
+	public double value() {
+		return val;
+	}
 }
 
 // Float literal, e.g.: "123e45"
-class FloatLit extends AbsNode implements  Node {
+class FloatLit extends AbsNode implements  Node, NumLit {
 	double val;
 	FloatLit(Token t, double val) {
 		super(t);
@@ -215,6 +243,13 @@ class FloatLit extends AbsNode implements  Node {
 	public Node simplify() {
 		return this;
 	}
+	public double value() {
+		return val;
+	}
+}
+
+interface NumLit {
+	double value();
 }
 
 
