@@ -18,7 +18,10 @@ public final class A2 {
 			mainScan(args);
 		} else if(cmd.equals("parse")) {
 			mainParse(args);
-		} else {
+		} else if (cmd.equals("simplify")) {
+			mainSimplify(args);
+		}
+		else {
 			badUsage();
 		}
 	}
@@ -57,6 +60,24 @@ public final class A2 {
 				status = 1;
 			} else if (p.ast != null) {
 				p.ast.print(System.out);
+			}
+		}
+		System.exit(status);
+	}
+
+	//
+	static void mainSimplify(String[] args) throws Throwable {
+		int status = 0;
+		for (int i=1; i<args.length; i++) {
+			String f = args[i];
+			Parser p = new Parser();
+			p.parseFile(f);
+			if (p.errors.size() > 0) {
+				p.printErrors(System.out);
+				status = 1;
+			} else if (p.ast != null) {
+				Node simplified = p.ast.simplify();
+				simplified.print(System.out);
 			}
 		}
 		System.exit(status);

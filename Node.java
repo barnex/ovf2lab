@@ -131,8 +131,36 @@ class BinOp extends AbsNode implements Node {
 	public Node simplify() {
 		x = x.simplify();
 		y = y.simplify();
-		// TODO: eval
+
+		if(x instanceof IntLit && y instanceof IntLit) {
+			long val = intOp(((IntLit)x).val, op, ((IntLit)y).val);
+			return new IntLit(val);
+		}
 		return this;
+	}
+	static long intOp(long x, String op, long y) {
+		if (op.equals("+")) {
+			return x+y;
+		}
+		if (op.equals("-")) {
+			return x-y;
+		}
+		if (op.equals("*")) {
+			return x*y;
+		}
+		if (op.equals("/")) {
+			return x/y;
+		}
+		if (op.equals("%")) {
+			return x%y;
+		}
+		if (op.equals("|")) {
+			return x|y;
+		}
+		if (op.equals("&")) {
+			return x&y;
+		}
+		throw new IllegalStateException("unknown op " + op);
 	}
 }
 
@@ -153,13 +181,17 @@ class Ident extends AbsNode implements Node {
 
 // Integer literal, e.g.: "123"
 class IntLit extends AbsNode implements Node {
-	long value;
-	IntLit(Token t, long value) {
+	long val;
+	IntLit(Token t, long val) {
 		super(t);
-		this.value = value;
+		this.val = val;
+	}
+	IntLit(long val) {
+		super(new Token()); // no pos info
+		this.val = val;
 	}
 	public void print(PrintStream out) {
-		out.print(this.value);
+		out.print(this.val);
 	}
 	public Node simplify() {
 		return this;
@@ -168,13 +200,17 @@ class IntLit extends AbsNode implements Node {
 
 // Float literal, e.g.: "123e45"
 class FloatLit extends AbsNode implements  Node {
-	double value;
-	FloatLit(Token t, double value) {
+	double val;
+	FloatLit(Token t, double val) {
 		super(t);
-		this.value = value;
+		this.val = val;
+	}
+	FloatLit(double val) {
+		super(new Token()); // no pos info
+		this.val = val;
 	}
 	public void print(PrintStream out) {
-		out.print(this.value);
+		out.print(this.val);
 	}
 	public Node simplify() {
 		return this;

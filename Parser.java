@@ -287,6 +287,12 @@ final class Parser {
 		throw new Bailout();
 	}
 
+	// compiler bug
+	static void panic(String msg) {
+		System.err.println(msg);
+		System.exit(3);
+	}
+
 	public void printErrors(PrintStream out) {
 		for(String err: this.errors) {
 			out.println(err);
