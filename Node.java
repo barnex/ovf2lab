@@ -185,6 +185,9 @@ class BinOp extends AbsNode implements Node {
 		if (op.equals("%")) {
 			return x%y;
 		}
+		if (op.equals("^")) {
+			return Math.pow(x, y);
+		}
 		throw new IllegalStateException("unknown op " + op);
 	}
 }
