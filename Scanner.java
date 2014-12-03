@@ -208,7 +208,7 @@ final class Scanner {
 		if (this.current == '-' || this.current == '+') {
 			this.consumeChar();
 		}
-		this.consumeNumber();
+		this.consumeDigits();
 	}
 
 	// consumes a quoted string, including the quotes.
@@ -264,7 +264,7 @@ final class Scanner {
 			if (pattern.charAt(i) == this.current) {
 				this.consumeChar();
 				consumed = true;
-				i = 0;
+				i = -1; // becomes 0 next the line
 			}
 			i++;
 		}
