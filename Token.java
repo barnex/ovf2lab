@@ -4,8 +4,6 @@ final class Token {
 
 	String value;  // string representation of the token
 	int type;      // token type
-	String file;   // file token appeared in
-	int line, pos; // positions in file
 
 	// token types
 	static final int INVALID = 0;
@@ -47,11 +45,6 @@ final class Token {
 			return "UNKNOWN(" + type + ")";
 		}
 		return typeName[type];
-	}
-
-	// token file name + position
-	public String pos() {
-		return this.file + ":" + this.line + ":" + this.pos;
 	}
 
 	public String toString() {

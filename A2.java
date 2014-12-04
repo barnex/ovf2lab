@@ -33,10 +33,10 @@ public final class A2 {
 			Reader r = new FileReader(new File(f));
 			Scanner s = new Scanner(f, r);
 			for (Token t = s.next(); t.type != Token.EOF; t = s.next()) {
-				System.out.println(t.pos() + "\t" + typeName(t.type) + ":\t" +  t.value);
+				System.out.println(s.pos() + "\t" + typeName(t.type) + ":\t" +  t.value);
 			}
 			Token t = s.next();
-			System.out.println(t.pos() + "\t" + typeName(t.type) + ":\t" +  t.value);
+			System.out.println(s.pos() + "\t" + typeName(t.type) + ":\t" +  t.value);
 		}
 	}
 

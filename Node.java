@@ -9,31 +9,19 @@ interface Node {
 	Node simplify();
 }
 
-// Abstract node base class provides position information
-abstract class AbsNode {
-
-	String file;
-	int line, pos;
-
-	AbsNode(Token token) {
-		this.file = token.file;
-		this.line = token.line;
-		this.pos = token.pos;
-	}
-}
-
 // Block statement: list of statements separated by EOLs.
-class BlockStmt extends AbsNode implements Node {
+class BlockStmt implements Node {
+	Pos pos;
 	ArrayList<Node> list;
-	public BlockStmt(Token t) {
-		super(t);
-		this.list = new ArrayList<Node>();
+	public BlockStmt(Pos p) {
+		pos = p;
+		list = new ArrayList<Node>();
 	}
 	void add(Node e) {
-		this.list.add(e);
+		list.add(e);
 	}
 	public void print(PrintStream out) {
-		for(Node e: this.list) {
+		for(Node e: list) {
 			e.print(out);
 			out.println();
 		}
@@ -47,11 +35,12 @@ class BlockStmt extends AbsNode implements Node {
 }
 
 // Assign statement "lhs op rhs", e.g.: a += b
-class AssignStmt extends AbsNode implements Node {
+class AssignStmt implements Node {
+	Pos pos;
 	String op;
 	Node lhs, rhs;
-	AssignStmt(Token t, String op) {
-		super(t);
+	AssignStmt(Pos p, String op) {
+		this.pos = p;
 		this.op = op;
 	}
 	public void print(PrintStream out) {
@@ -67,11 +56,12 @@ class AssignStmt extends AbsNode implements Node {
 }
 
 // Postfix statement "lhs op", e.g.: a++
-class PostfixStmt extends AbsNode implements Node {
+class PostfixStmt implements Node {
+	Pos pos;
 	String op;
 	Node lhs;
-	PostfixStmt(Token t, Node lhs, String op) {
-		super(t);
+	PostfixStmt(Pos p, Node lhs, String op) {
+		this.pos = p;
 		this.lhs = lhs;
 		this.op = op;
 	}
@@ -86,11 +76,12 @@ class PostfixStmt extends AbsNode implements Node {
 }
 
 // Call expression: f(arg1, arg2, ...)
-class CallExpr extends AbsNode implements Node {
+class CallExpr implements Node {
+	Pos pos;
 	Node f;
 	Node[] args;
-	CallExpr(Token t, Node f) {
-		super(t);
+	CallExpr(Pos p, Node f) {
+		this.pos = p;
 		this.f = f;
 	}
 	public void print(PrintStream out) {
@@ -114,11 +105,12 @@ class CallExpr extends AbsNode implements Node {
 }
 
 // Binary operator" x op y", e.g.: a + b
-class BinOp extends AbsNode implements Node {
+class BinOp implements Node {
+	Pos pos;
 	String op;
 	Node x, y;
-	BinOp(Token t, String op) {
-		super(t);
+	BinOp(Pos p, String op) {
+		this.pos = p;
 		this.op = op;
 	}
 	public void print(PrintStream out) {
@@ -134,11 +126,11 @@ class BinOp extends AbsNode implements Node {
 
 		if(x instanceof IntLit && y instanceof IntLit) {
 			long val = intOp(((IntLit)x).val, op, ((IntLit)y).val);
-			return new IntLit(val);
+			return new IntLit(this.pos, val);
 		}
 		if(x instanceof NumLit && y instanceof NumLit) {
 			double val = floatOp( ((NumLit)x).value(), op, ((NumLit)y).value() );
-			return new FloatLit(val);
+			return new FloatLit(this.pos, val);
 		}
 		return this;
 	}
@@ -193,10 +185,11 @@ class BinOp extends AbsNode implements Node {
 }
 
 // Identifier, e.g.: "sin"
-class Ident extends AbsNode implements Node {
+class Ident implements Node {
+	Pos pos;
 	String name;
-	Ident(Token t, String name) {
-		super(t);
+	Ident(Pos p, String name) {
+		this.pos = p;
 		this.name = name;
 	}
 	public void print(PrintStream out) {
@@ -208,14 +201,11 @@ class Ident extends AbsNode implements Node {
 }
 
 // Integer literal, e.g.: "123"
-class IntLit extends AbsNode implements Node, NumLit {
+class IntLit implements Node, NumLit {
+	Pos pos;
 	long val;
-	IntLit(Token t, long val) {
-		super(t);
-		this.val = val;
-	}
-	IntLit(long val) {
-		super(new Token()); // no pos info
+	IntLit(Pos p, long val) {
+		this.pos = p;
 		this.val = val;
 	}
 	public void print(PrintStream out) {
@@ -230,14 +220,11 @@ class IntLit extends AbsNode implements Node, NumLit {
 }
 
 // Float literal, e.g.: "123e45"
-class FloatLit extends AbsNode implements  Node, NumLit {
+class FloatLit implements  Node, NumLit {
+	Pos pos;
 	double val;
-	FloatLit(Token t, double val) {
-		super(t);
-		this.val = val;
-	}
-	FloatLit(double val) {
-		super(new Token()); // no pos info
+	FloatLit(Pos p, double val) {
+		this.pos = p;
 		this.val = val;
 	}
 	public void print(PrintStream out) {

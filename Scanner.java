@@ -6,7 +6,7 @@ import java.lang.Character;
 final class Scanner {
 
 	Reader in;         // input stream
-	String filename;   // file name to document token position
+	String file;   // file name to document token position
 	int line, pos;     // token line and position in file
 	int current, next; // current and next character
 	StringBuilder buf; // builds token value
@@ -16,7 +16,7 @@ final class Scanner {
 	Scanner(String filename, Reader in) throws IOException {
 		this.in = in;
 		this.buf = new StringBuilder();
-		this.filename = filename;
+		this.file = filename;
 		this.advance(); // set up current, next character
 		this.advance();
 		this.pos = 1;
@@ -24,13 +24,10 @@ final class Scanner {
 	}
 
 	// next() advances currentToken, nextToken by one token.
-	public Token next() throws IOException {
+	Token next() throws IOException {
 		this.skipWhitespace();
 
 		Token t = new Token();
-		t.line = this.line;
-		t.pos = this.pos;
-		t.file = this.filename;
 
 		this.buf.setLength(0);
 		t.type = scanToken();
@@ -41,6 +38,10 @@ final class Scanner {
 		}
 
 		return t;
+	}
+
+	Pos pos() {
+		return new Pos(file, line, pos);
 	}
 
 	// scan the token staring at current position,

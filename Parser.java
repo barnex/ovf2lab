@@ -36,7 +36,7 @@ final class Parser {
 			}
 			// bailout without reporting an error is a bug
 			if (this.errors.size() == 0) {
-				this.errors.add("BUG: parser bailout at " + token.pos());
+				this.errors.add("BUG: parser bailout at " + pos());
 				e.printStackTrace();
 				System.exit(2);
 			}
@@ -54,7 +54,7 @@ final class Parser {
 
 	// parse a block statement
 	Node parseBlockStmt() throws Bailout {
-		BlockStmt l = new BlockStmt(token) ;
+		BlockStmt l = new BlockStmt(pos()) ;
 		skipEOL();
 		while (token.type != Token.EOF) {
 			l.add(parseStmt());
@@ -68,14 +68,14 @@ final class Parser {
 	Node parseStmt() throws Bailout {
 		Node expr = parseExpr();
 		if (this.token.type == Token.ASSIGN) {
-			AssignStmt ass = new AssignStmt(this.token, this.token.value);
+			AssignStmt ass = new AssignStmt(pos(), token.value);
 			ass.lhs = expr;
 			advance(); // consume operator
 			ass.rhs = parseExpr();
 			return ass;
 		}
 		if (this.token.type == Token.POSTFIX) {
-			PostfixStmt s = new PostfixStmt(this.token, expr, this.token.value);
+			PostfixStmt s = new PostfixStmt(pos(), expr, token.value);
 			advance(); // consume postfix operator
 			return s;
 		}
@@ -89,7 +89,7 @@ final class Parser {
 		ArrayList<Node> l = new ArrayList<Node>();
 		l.add(parseOperand());
 		while (this.token.type == Token.BINOP) {
-			l.add(new BinOp(this.token, this.token.value));
+			l.add(new BinOp(pos(), token.value));
 			this.advance();
 			l.add(parseOperand());
 		}
@@ -155,12 +155,12 @@ final class Parser {
 
 		// append successive function calls, e.g.: f(a)(b)(c)
 		while (token.type == Token.LPAREN) {
-			CallExpr call = new CallExpr(this.token, expr);
+			CallExpr call = new CallExpr(pos(), expr);
 			call.args = parseArgList();
 			expr = call;
 		}
 		if (expr == null) {
-			error("expected operand, found: " + this.token);
+			error("expected operand, found: " + token);
 		}
 		return expr;
 	}
@@ -206,7 +206,7 @@ final class Parser {
 	// parse identifier
 	Node parseIdent() throws Bailout {
 		expect(Token.IDENT);
-		Node ident = new Ident(token, token.value);
+		Node ident = new Ident(pos(), token.value);
 		advance();
 		return ident;
 	}
@@ -215,7 +215,7 @@ final class Parser {
 	Node parseNumber() throws Bailout {
 		try {
 			long v = Long.parseLong(token.value);
-			Node n = new IntLit(token, v);
+			Node n = new IntLit(pos(), v);
 			advance();
 			return n;
 		} catch(NumberFormatException e) {
@@ -224,7 +224,7 @@ final class Parser {
 
 		try {
 			double v = Double.parseDouble(token.value);
-			Node n = new FloatLit(token, v);
+			Node n = new FloatLit(pos(), v);
 			advance();
 			return n;
 		} catch(NumberFormatException e) {
@@ -237,6 +237,10 @@ final class Parser {
 
 
 	// Tokenizing
+
+	Pos pos() {
+		return scanner.pos();
+	}
 
 	// Advances by one token.
 	void advance() throws Bailout {
@@ -278,7 +282,7 @@ final class Parser {
 
 	// add error with position information of current token + msg.
 	void error(String msg) throws Bailout {
-		this.errors.add(this.token.pos() + ": " + msg);
+		errors.add(pos() + ": " + msg);
 		bailout();
 	}
 
