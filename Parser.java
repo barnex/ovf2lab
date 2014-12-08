@@ -69,8 +69,7 @@ final class Parser {
 		consume(Token.LBRACE);
 		while (token.type != Token.RBRACE) {
 			l.add(parseStmt());
-			expect(Token.EOL);
-			skipEOL();
+			consume(Token.EOL);
 		}
 		consume(Token.RBRACE);
 		return l;
@@ -78,6 +77,10 @@ final class Parser {
 
 	// parse a statement
 	Node parseStmt() throws Bailout {
+		skipEOL();
+		if(this.token.type == Token.LBRACE) {
+			return parseBlockStmt();
+		}
 		Node expr = parseExpr();
 		if (this.token.type == Token.ASSIGN) {
 			AssignStmt ass = new AssignStmt(line(), token.value);

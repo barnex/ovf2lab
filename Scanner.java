@@ -90,6 +90,14 @@ final class Scanner {
 			consumeChar();
 			return Token.RPAREN;
 		}
+		if (current == '{') {
+			consumeChar();
+			return Token.LBRACE;
+		}
+		if (current == '}') {
+			consumeChar();
+			return Token.RBRACE;
+		}
 		// comma
 		if (current == ',') {
 			consumeChar();

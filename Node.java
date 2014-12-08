@@ -21,10 +21,12 @@ class BlockStmt implements Node {
 		list.add(e);
 	}
 	public void print(PrintStream out) {
+		out.println("{");
 		for(Node e: list) {
 			e.print(out);
 			out.println();
 		}
+		out.print("}");
 	}
 	public Node simplify() {
 		for( int i=0; i<list.size(); i++) {
