@@ -64,15 +64,16 @@ final class Parser {
 	}
 
 	// parse a block statement
-	Node parseBlockStmt() throws Bailout{
+	Node parseBlockStmt() throws Bailout {
 		BlockStmt l = new BlockStmt(line()) ;
-		consume(token.LBRACE);
+		consume(Token.LBRACE);
 		while (token.type != Token.RBRACE) {
 			l.add(parseStmt());
 			expect(Token.EOL);
 			skipEOL();
 		}
-		consume(token.RBRACE);
+		consume(Token.RBRACE);
+		return l;
 	}
 
 	// parse a statement
@@ -268,7 +269,7 @@ final class Parser {
 
 	// check that we are at a token with type,
 	// and adance
-	void consume(int tokenType){
+	void consume(int tokenType) throws Bailout {
 		expect(tokenType);
 		advance();
 	}

@@ -38,8 +38,8 @@ final class Token {
 	                                  "postfix",
 	                                  "comma",
 	                                  "comment",
-										"left brace",
-										"right brace" 
+	                                  "left brace",
+	                                  "right brace"
 	                                 };
 
 
