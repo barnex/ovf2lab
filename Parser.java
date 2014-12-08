@@ -313,15 +313,23 @@ final class Parser {
 		throw new Bailout();
 	}
 
-	// compiler bug
+	// exit with compiler bug
 	static void panic(String msg) {
 		System.err.println(msg);
 		System.exit(3);
 	}
 
+	// print error list to out
 	public void printErrors(PrintStream out) {
 		for(String err: this.errors) {
 			out.println(err);
+		}
+	}
+
+	// print indent number of tabs (used by Node.print)
+	static void printIndent(PrintStream out, int indent) {
+		for(int i=0; i<indent; i++) {
+			out.print('\t');
 		}
 	}
 }

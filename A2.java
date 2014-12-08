@@ -59,7 +59,7 @@ public final class A2 {
 				p.printErrors(System.out);
 				status = 1;
 			} else if (p.ast != null) {
-				p.ast.print(System.out);
+				p.ast.print(System.out, 0);
 			}
 		}
 		System.exit(status);
@@ -77,7 +77,7 @@ public final class A2 {
 				status = 1;
 			} else if (p.ast != null) {
 				Node simplified = p.ast.simplify();
-				simplified.print(System.out);
+				simplified.print(System.out, 0);
 			}
 		}
 		System.exit(status);

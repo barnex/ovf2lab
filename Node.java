@@ -5,7 +5,7 @@ import java.io.PrintStream;
 
 // Every node in the AST implements this interface
 interface Node {
-	void print(PrintStream out);
+	void print(PrintStream out, int indent);
 	Node simplify();
 }
 
@@ -20,12 +20,14 @@ class BlockStmt implements Node {
 	void add(Node e) {
 		list.add(e);
 	}
-	public void print(PrintStream out) {
+	public void print(PrintStream out, int indent) {
+		Parser.printIndent(out, indent);
 		out.println("{");
 		for(Node e: list) {
-			e.print(out);
+			e.print(out, indent+1);
 			out.println();
 		}
+		Parser.printIndent(out, indent);
 		out.print("}");
 	}
 	public Node simplify() {
@@ -45,10 +47,10 @@ class AssignStmt implements Node {
 		this.line = line;
 		this.op = op;
 	}
-	public void print(PrintStream out) {
-		this.lhs.print(out);
+	public void print(PrintStream out, int indent) {
+		this.lhs.print(out, indent);
 		out.print(this.op);
-		this.rhs.print(out);
+		this.rhs.print(out, 0);
 	}
 	public Node simplify() {
 		lhs = lhs.simplify();
@@ -67,8 +69,8 @@ class PostfixStmt implements Node {
 		this.lhs = lhs;
 		this.op = op;
 	}
-	public void print(PrintStream out) {
-		this.lhs.print(out);
+	public void print(PrintStream out, int indent) {
+		this.lhs.print(out, indent);
 		out.print(this.op);
 	}
 	public Node simplify() {
@@ -86,14 +88,14 @@ class CallExpr implements Node {
 		this.line = line;
 		this.f = f;
 	}
-	public void print(PrintStream out) {
-		this.f.print(out);
+	public void print(PrintStream out, int indent) {
+		this.f.print(out, indent);
 		out.print("(");
 		for(int i=0; i<this.args.length; i++) {
 			if (i>0) {
 				out.print(", ");
 			}
-			this.args[i].print(out);
+			this.args[i].print(out, 0);
 		}
 		out.print(")");
 	}
@@ -115,11 +117,12 @@ class BinOp implements Node {
 		this.line = line;
 		this.op = op;
 	}
-	public void print(PrintStream out) {
+	public void print(PrintStream out, int indent) {
+		Parser.printIndent(out, indent);
 		out.print("(");
-		this.x.print(out);
+		this.x.print(out, 0);
 		out.print(this.op);
-		this.y.print(out);
+		this.y.print(out, 0);
 		out.print(")");
 	}
 	public Node simplify() {
@@ -194,7 +197,8 @@ class Ident implements Node {
 		this.line = line;
 		this.name = name;
 	}
-	public void print(PrintStream out) {
+	public void print(PrintStream out, int indent) {
+		Parser.printIndent(out, indent);
 		out.print(this.name);
 	}
 	public Node simplify() {
@@ -210,7 +214,8 @@ class IntLit implements Node, NumLit {
 		this.line = line;
 		this.val = val;
 	}
-	public void print(PrintStream out) {
+	public void print(PrintStream out, int indent) {
+		Parser.printIndent(out, indent);
 		out.print(this.val);
 	}
 	public Node simplify() {
@@ -229,7 +234,8 @@ class FloatLit implements  Node, NumLit {
 		this.line = line;
 		this.val = val;
 	}
-	public void print(PrintStream out) {
+	public void print(PrintStream out, int indent) {
+		Parser.printIndent(out, indent);
 		out.print(this.val);
 	}
 	public Node simplify() {
@@ -243,5 +249,4 @@ class FloatLit implements  Node, NumLit {
 interface NumLit {
 	double value();
 }
-
 
