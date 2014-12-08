@@ -5,11 +5,11 @@ import java.lang.Character;
 // Scanner tokenizes input text.
 final class Scanner {
 
-	Reader in;         // input stream
-	String file;   // file name to document token position
-	int line, pos;     // token line and position in file
-	int current, next; // current and next character
-	StringBuilder buf; // builds token value
+	Reader in;               // input stream
+	String file;             // file name to document token position
+	int current, next;       // current and next character
+	int startLine, lastLine; //
+	StringBuilder buf;       // builds token value
 
 	// Constructs a scanner that tokenizes the content delivered by in.
 	// filename is used to report token positions
@@ -17,19 +17,19 @@ final class Scanner {
 		this.in = in;
 		this.buf = new StringBuilder();
 		this.file = filename;
+		this.lastLine = 1;
 		this.advance(); // set up current, next character
 		this.advance();
-		this.pos = 1;
-		this.line = 1;
 	}
 
 	// next() advances currentToken, nextToken by one token.
 	Token next() throws IOException {
-		this.skipWhitespace();
+		startLine = lastLine;
+		skipWhitespace();
 
 		Token t = new Token();
 
-		this.buf.setLength(0);
+		buf.setLength(0);
 		t.type = scanToken();
 
 		t.value = buf.toString();
@@ -40,8 +40,12 @@ final class Scanner {
 		return t;
 	}
 
-	Pos pos() {
-		return new Pos(file, line, pos);
+	String pos() {
+		return file + ":" + line();
+	}
+
+	int line() {
+		return startLine;
 	}
 
 	// scan the token staring at current position,
@@ -151,9 +155,11 @@ final class Scanner {
 
 	// advances current and next characters by one.
 	void advance() throws IOException {
+		if (this.current == '\n') {
+			this.lastLine++;
+		}
 		this.current = this.next;
 		this.next = this.in.read();
-		this.pos++;
 	}
 
 	// after skipWhitespace, the current character is not whitespace.
@@ -184,8 +190,6 @@ final class Scanner {
 			consumed = true;
 		}
 		if (consumed) {
-			this.line++;
-			this.pos = 1;
 			return;
 		}
 		if (this.current == ';') {

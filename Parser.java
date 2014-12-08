@@ -54,7 +54,7 @@ final class Parser {
 
 	// parse a block statement
 	Node parseBlockStmt() throws Bailout {
-		BlockStmt l = new BlockStmt(pos()) ;
+		BlockStmt l = new BlockStmt(line()) ;
 		skipEOL();
 		while (token.type != Token.EOF) {
 			l.add(parseStmt());
@@ -68,14 +68,14 @@ final class Parser {
 	Node parseStmt() throws Bailout {
 		Node expr = parseExpr();
 		if (this.token.type == Token.ASSIGN) {
-			AssignStmt ass = new AssignStmt(pos(), token.value);
+			AssignStmt ass = new AssignStmt(line(), token.value);
 			ass.lhs = expr;
 			advance(); // consume operator
 			ass.rhs = parseExpr();
 			return ass;
 		}
 		if (this.token.type == Token.POSTFIX) {
-			PostfixStmt s = new PostfixStmt(pos(), expr, token.value);
+			PostfixStmt s = new PostfixStmt(line(), expr, token.value);
 			advance(); // consume postfix operator
 			return s;
 		}
@@ -89,7 +89,7 @@ final class Parser {
 		ArrayList<Node> l = new ArrayList<Node>();
 		l.add(parseOperand());
 		while (this.token.type == Token.BINOP) {
-			l.add(new BinOp(pos(), token.value));
+			l.add(new BinOp(line(), token.value));
 			this.advance();
 			l.add(parseOperand());
 		}
@@ -155,7 +155,7 @@ final class Parser {
 
 		// append successive function calls, e.g.: f(a)(b)(c)
 		while (token.type == Token.LPAREN) {
-			CallExpr call = new CallExpr(pos(), expr);
+			CallExpr call = new CallExpr(line(), expr);
 			call.args = parseArgList();
 			expr = call;
 		}
@@ -206,7 +206,7 @@ final class Parser {
 	// parse identifier
 	Node parseIdent() throws Bailout {
 		expect(Token.IDENT);
-		Node ident = new Ident(pos(), token.value);
+		Node ident = new Ident(line(), token.value);
 		advance();
 		return ident;
 	}
@@ -215,7 +215,7 @@ final class Parser {
 	Node parseNumber() throws Bailout {
 		try {
 			long v = Long.parseLong(token.value);
-			Node n = new IntLit(pos(), v);
+			Node n = new IntLit(line(), v);
 			advance();
 			return n;
 		} catch(NumberFormatException e) {
@@ -224,7 +224,7 @@ final class Parser {
 
 		try {
 			double v = Double.parseDouble(token.value);
-			Node n = new FloatLit(pos(), v);
+			Node n = new FloatLit(line(), v);
 			advance();
 			return n;
 		} catch(NumberFormatException e) {
@@ -238,8 +238,12 @@ final class Parser {
 
 	// Tokenizing
 
-	Pos pos() {
+	String pos() {
 		return scanner.pos();
+	}
+
+	int line() {
+		return scanner.line();
 	}
 
 	// Advances by one token.

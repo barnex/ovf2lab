@@ -11,10 +11,10 @@ interface Node {
 
 // Block statement: list of statements separated by EOLs.
 class BlockStmt implements Node {
-	Pos pos;
+	int line;
 	ArrayList<Node> list;
-	public BlockStmt(Pos p) {
-		pos = p;
+	public BlockStmt(int line) {
+		this.line = line;
 		list = new ArrayList<Node>();
 	}
 	void add(Node e) {
@@ -36,11 +36,11 @@ class BlockStmt implements Node {
 
 // Assign statement "lhs op rhs", e.g.: a += b
 class AssignStmt implements Node {
-	Pos pos;
+	int line;
 	String op;
 	Node lhs, rhs;
-	AssignStmt(Pos p, String op) {
-		this.pos = p;
+	AssignStmt(int line, String op) {
+		this.line = line;
 		this.op = op;
 	}
 	public void print(PrintStream out) {
@@ -57,11 +57,11 @@ class AssignStmt implements Node {
 
 // Postfix statement "lhs op", e.g.: a++
 class PostfixStmt implements Node {
-	Pos pos;
+	int line;
 	String op;
 	Node lhs;
-	PostfixStmt(Pos p, Node lhs, String op) {
-		this.pos = p;
+	PostfixStmt(int line, Node lhs, String op) {
+		this.line = line;
 		this.lhs = lhs;
 		this.op = op;
 	}
@@ -77,11 +77,11 @@ class PostfixStmt implements Node {
 
 // Call expression: f(arg1, arg2, ...)
 class CallExpr implements Node {
-	Pos pos;
+	int line;
 	Node f;
 	Node[] args;
-	CallExpr(Pos p, Node f) {
-		this.pos = p;
+	CallExpr(int line, Node f) {
+		this.line = line;
 		this.f = f;
 	}
 	public void print(PrintStream out) {
@@ -106,11 +106,11 @@ class CallExpr implements Node {
 
 // Binary operator" x op y", e.g.: a + b
 class BinOp implements Node {
-	Pos pos;
+	int line;
 	String op;
 	Node x, y;
-	BinOp(Pos p, String op) {
-		this.pos = p;
+	BinOp(int line, String op) {
+		this.line = line;
 		this.op = op;
 	}
 	public void print(PrintStream out) {
@@ -126,11 +126,11 @@ class BinOp implements Node {
 
 		if(x instanceof IntLit && y instanceof IntLit) {
 			long val = intOp(((IntLit)x).val, op, ((IntLit)y).val);
-			return new IntLit(this.pos, val);
+			return new IntLit(line, val);
 		}
 		if(x instanceof NumLit && y instanceof NumLit) {
 			double val = floatOp( ((NumLit)x).value(), op, ((NumLit)y).value() );
-			return new FloatLit(this.pos, val);
+			return new FloatLit(line, val);
 		}
 		return this;
 	}
@@ -186,10 +186,10 @@ class BinOp implements Node {
 
 // Identifier, e.g.: "sin"
 class Ident implements Node {
-	Pos pos;
+	int line;
 	String name;
-	Ident(Pos p, String name) {
-		this.pos = p;
+	Ident(int line, String name) {
+		this.line = line;
 		this.name = name;
 	}
 	public void print(PrintStream out) {
@@ -202,10 +202,10 @@ class Ident implements Node {
 
 // Integer literal, e.g.: "123"
 class IntLit implements Node, NumLit {
-	Pos pos;
+	int line;
 	long val;
-	IntLit(Pos p, long val) {
-		this.pos = p;
+	IntLit(int line, long val) {
+		this.line = line;
 		this.val = val;
 	}
 	public void print(PrintStream out) {
@@ -221,10 +221,10 @@ class IntLit implements Node, NumLit {
 
 // Float literal, e.g.: "123e45"
 class FloatLit implements  Node, NumLit {
-	Pos pos;
+	int line;
 	double val;
-	FloatLit(Pos p, double val) {
-		this.pos = p;
+	FloatLit(int line, double val) {
+		this.line = line;
 		this.val = val;
 	}
 	public void print(PrintStream out) {
