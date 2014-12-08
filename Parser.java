@@ -16,7 +16,6 @@ final class Parser {
 	Token token, next; // current and next (peeked) token
 	boolean debug = true;
 
-
 	public void parseFile(String filename) throws FileNotFoundException, IOException {
 		Reader reader = new FileReader(new File(filename));
 		this.scanner = new Scanner(filename, reader);
@@ -49,11 +48,11 @@ final class Parser {
 
 	// parse the entire file
 	void parse() throws Bailout {
-		this.ast = parseBlockStmt();
+		this.ast = parseScript();
 	}
 
-	// parse a block statement
-	Node parseBlockStmt() throws Bailout {
+	// parse script file, as if we're inside a block statement
+	Node parseScript() throws Bailout {
 		BlockStmt l = new BlockStmt(line()) ;
 		skipEOL();
 		while (token.type != Token.EOF) {
@@ -62,6 +61,18 @@ final class Parser {
 			skipEOL();
 		}
 		return l;
+	}
+
+	// parse a block statement
+	Node parseBlockStmt() throws Bailout{
+		BlockStmt l = new BlockStmt(line()) ;
+		consume(token.LBRACE);
+		while (token.type != Token.RBRACE) {
+			l.add(parseStmt());
+			expect(Token.EOL);
+			skipEOL();
+		}
+		consume(token.RBRACE);
 	}
 
 	// parse a statement
@@ -167,8 +178,7 @@ final class Parser {
 
 	// parse argument list (arg1, arg2, ...)
 	Node[] parseArgList() throws Bailout {
-		expect(Token.LPAREN);
-		advance();
+		consume(Token.LPAREN);
 
 		ArrayList<Node>args = new ArrayList<Node>();
 
@@ -184,8 +194,7 @@ final class Parser {
 			}
 			args.add(parseExpr());
 			if (token.type != Token.RPAREN) {
-				expect(Token.COMMA);
-				advance();
+				consume(Token.COMMA);
 				if(token.type == Token.RPAREN) {
 					error("unexpected )");
 				}
@@ -195,11 +204,9 @@ final class Parser {
 
 	// parse a parenthesized expression
 	Node parseParenthesizedExpr() throws Bailout {
-		expect(Token.LPAREN);
-		advance();
+		consume(Token.LPAREN);
 		Node inside = parseExpr();
-		expect(Token.RPAREN);
-		advance();
+		consume(Token.RPAREN);
 		return inside;
 	}
 
@@ -257,6 +264,13 @@ final class Parser {
 		if (token.type == Token.INVALID) {
 			error("invalid character: " + token.value);
 		}
+	}
+
+	// check that we are at a token with type,
+	// and adance
+	void consume(int tokenType){
+		expect(tokenType);
+		advance();
 	}
 
 	// scan next token but skip comments

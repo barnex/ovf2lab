@@ -20,6 +20,8 @@ final class Token {
 	static final int POSTFIX = 11;
 	static final int COMMA = 12;
 	static final int COMMENT = 13;
+	static final int LBRACE = 14;
+	static final int RBRACE = 15;
 
 	// maps token type to human readable description
 	static final String[] typeName = {"invalid character",
@@ -35,7 +37,9 @@ final class Token {
 	                                  "assignment",
 	                                  "postfix",
 	                                  "comma",
-	                                  "comment"
+	                                  "comment",
+										"left brace",
+										"right brace" 
 	                                 };
 
 
