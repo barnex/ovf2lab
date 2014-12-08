@@ -103,6 +103,12 @@ final class Scanner {
 			consumeChar();
 			return Token.COMMA;
 		}
+		// declare-assign ':='
+		if (current == ':' && next == '=') {
+			consumeChar();
+			consumeChar();
+			return Token.COLONEQUALS;
+		}
 		// assign: =
 		if (current == '=' && next != '=') {
 			consumeChar();

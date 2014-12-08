@@ -22,6 +22,7 @@ final class Token {
 	static final int COMMENT = 13;
 	static final int LBRACE = 14;
 	static final int RBRACE = 15;
+	static final int COLONEQUALS = 16;
 
 	// maps token type to human readable description
 	static final String[] typeName = {"invalid character",
@@ -39,7 +40,8 @@ final class Token {
 	                                  "comma",
 	                                  "comment",
 	                                  "left brace",
-	                                  "right brace"
+	                                  "right brace",
+	                                  "declare-assign"
 	                                 };
 
 

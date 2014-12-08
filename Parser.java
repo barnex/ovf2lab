@@ -89,6 +89,9 @@ final class Parser {
 			ass.rhs = parseExpr();
 			return ass;
 		}
+		if (this.token.type == Token.COLONEQUALS) {
+			// TODO
+		}
 		if (this.token.type == Token.POSTFIX) {
 			PostfixStmt s = new PostfixStmt(line(), expr, token.value);
 			advance(); // consume postfix operator
