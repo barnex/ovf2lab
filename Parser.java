@@ -14,6 +14,8 @@ final class Parser {
 
 	Scanner scanner;
 	Token token, next; // current and next (peeked) token
+	Scope scope;
+
 	boolean debug = true;
 
 	public void parseFile(String filename) throws FileNotFoundException, IOException {
