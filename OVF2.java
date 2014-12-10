@@ -49,6 +49,7 @@ class OVF2 {
 			throw new IOException("invalid data header: " + line);
 		}
 
+		// allocate data
 		float[][][][] data = new float[nComp][][][];
 		for(int c=0; c<data.length; c++) {
 			data[c] = new float[sizeZ][][];
@@ -61,6 +62,8 @@ class OVF2 {
 		}
 
 
+		// read data
+		
 		// get float from little-endian binary data.
 		ByteBuffer buffer = ByteBuffer.allocate(4);
 		buffer.put(3, readByte(in));
