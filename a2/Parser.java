@@ -1,5 +1,6 @@
 package a2;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -9,11 +10,24 @@ import java.util.ArrayList;
 // Parser transforms an input file into an Abstract Syntax Tree (AST).
 public final class Parser {
 
-	// Parses the contents read from in.
-	// filename only serves to report file:line positions.
+	/** Parses the contents read from in.
+	    filename only serves to report file:line positions. */
 	public static Node parse(String filename, InputStream in) throws IOException, Error {
 		Parser p = new Parser(filename, in);
 		return p.parseScript();
+	}
+
+	/** Parses a single source line, for interactive interpreter. */
+	public static Node parseLine(String line) throws Error {
+		InputStream in = new ByteArrayInputStream(line.getBytes());
+		try {
+			Parser p = new Parser("stdin", in);
+			return p.parseScript();
+		} catch(IOException e) {
+			// ByteArrayInputStream should not throw IOException
+			panic(e.toString());
+			return null;
+		}
 	}
 
 	Scanner scanner;
