@@ -5,19 +5,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 
 // Parser transforms an input file into an Abstract Syntax Tree (AST).
-final class Parser {
-
-	Scanner scanner;
-	Token token, next; // current and next (peeked) token
-	Scope scope;
-
-	boolean debug = true;
-
-	private Parser(String filename, InputStream in) throws IOException {
-		this.scanner = new Scanner(filename, new InputStreamReader(in));
-		this.token = this.scan();
-		this.next = this.scan();
-	}
+public final class Parser {
 
 	// Parses the contents read from in.
 	// filename only serves to report file:line positions.
@@ -25,6 +13,16 @@ final class Parser {
 		Parser p = new Parser(filename, in);
 		return p.parseScript();
 	}
+
+	Scanner scanner;
+	Token token, next; // current and next (peeked) token
+
+	private Parser(String filename, InputStream in) throws IOException {
+		this.scanner = new Scanner(filename, new InputStreamReader(in));
+		this.token = this.scan();
+		this.next = this.scan();
+	}
+
 
 	// Parsing
 
