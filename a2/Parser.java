@@ -7,33 +7,26 @@ import java.util.ArrayList;
 // Parser transforms an input file into an Abstract Syntax Tree (AST).
 final class Parser {
 
-	public Node ast;                  // contains the AST root after successful parsing
-	public ArrayList<String> errors;  // contains syntax errors after parse error
-
 	Scanner scanner;
 	Token token, next; // current and next (peeked) token
 	Scope scope;
 
 	boolean debug = true;
 
-	private Parser(InputStream in) throws IOException {
-		this.scanner = new Scanner("", new InputStreamReader(in));
-		this.errors = new ArrayList<String>();
+	private Parser(String filename, InputStream in) throws IOException {
+		this.scanner = new Scanner(filename, new InputStreamReader(in));
 		this.token = this.scan();
 		this.next = this.scan();
 	}
 
-	public static Node parseFile(InputStream in) throws IOException, Bailout {
-		Parser p = new Parser(in);
+	// Parses the contents read from in.
+	// filename only serves to report file:line positions.
+	public static Node parse(String filename, InputStream in) throws IOException, Bailout {
+		Parser p = new Parser(filename, in);
 		return p.parseScript();
 	}
 
 	// Parsing
-
-	// parse the entire file
-	void parse() throws Bailout {
-		this.ast = parseScript();
-	}
 
 	// parse script file, as if we're inside a block statement
 	Node parseScript() throws Bailout {
@@ -291,26 +284,13 @@ final class Parser {
 
 	// add error with position information of current token + msg.
 	void error(String msg) throws Bailout {
-		errors.add(pos() + ": " + msg);
-		bailout();
-	}
-
-	// Throw Bailout, stop parsing.
-	static void bailout() throws Bailout {
-		throw new Bailout();
+		throw new Bailout(pos() + ": " + msg);
 	}
 
 	// exit with compiler bug
 	static void panic(String msg) {
 		System.err.println(msg);
 		System.exit(3);
-	}
-
-	// print error list to out
-	public void printErrors(PrintStream out) {
-		for(String err: this.errors) {
-			out.println(err);
-		}
 	}
 
 	// print indent number of tabs (used by Node.print)
@@ -325,7 +305,7 @@ final class Parser {
 // Bailout is throw internally to abort parsing on a fatal error.
 final class Bailout extends Throwable {
 	private static final long serialVersionUID = 1L; // sigh
-	Bailout() {
-		super("parser bailout");
+	Bailout(String msg) {
+		super(msg);
 	}
 }

@@ -53,7 +53,7 @@ public final class A2 {
 	static void mainParse(String[] args) throws Throwable {
 		for (int i=1; i<args.length; i++) {
 			String f = args[i];
-			Node ast = Parser.parseFile(new FileInputStream(new File(f)));
+			Node ast = Parser.parse(f, new FileInputStream(new File(f)));
 			ast.print(System.out, 0);
 		}
 	}
