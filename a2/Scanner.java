@@ -1,3 +1,5 @@
+package a2;
+
 import java.io.Reader;
 import java.io.IOException;
 import java.lang.Character;

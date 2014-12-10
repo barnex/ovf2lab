@@ -1,3 +1,5 @@
+package a2;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileInputStream;

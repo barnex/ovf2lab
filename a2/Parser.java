@@ -1,3 +1,5 @@
+package a2;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -9,7 +11,7 @@ public final class Parser {
 
 	// Parses the contents read from in.
 	// filename only serves to report file:line positions.
-	public static Node parse(String filename, InputStream in) throws IOException, Bailout {
+	public static Node parse(String filename, InputStream in) throws IOException, Error {
 		Parser p = new Parser(filename, in);
 		return p.parseScript();
 	}
@@ -27,7 +29,7 @@ public final class Parser {
 	// Parsing
 
 	// parse script file, as if we're inside a block statement
-	Node parseScript() throws Bailout {
+	Node parseScript() throws Error {
 		BlockStmt l = new BlockStmt(line()) ;
 		skipEOL();
 		while (token.type != Token.EOF) {
@@ -39,7 +41,7 @@ public final class Parser {
 	}
 
 	// parse a block statement
-	Node parseBlockStmt() throws Bailout {
+	Node parseBlockStmt() throws Error {
 		BlockStmt l = new BlockStmt(line()) ;
 		consume(Token.LBRACE);
 		while (token.type != Token.RBRACE) {
@@ -51,7 +53,7 @@ public final class Parser {
 	}
 
 	// parse a statement
-	Node parseStmt() throws Bailout {
+	Node parseStmt() throws Error {
 		skipEOL();
 		if(this.token.type == Token.LBRACE) {
 			return parseBlockStmt();
@@ -76,7 +78,7 @@ public final class Parser {
 	}
 
 	// parse a compound expression, honor operator precedence.
-	Node parseExpr() throws Bailout {
+	Node parseExpr() throws Error {
 		// make list of operands and operators, left to right
 		// operators do not have children set yet.
 		ArrayList<Node> l = new ArrayList<Node>();
@@ -135,7 +137,7 @@ public final class Parser {
 
 
 	// parses operand expression, stops at binary operator (+,-,*,...)
-	Node parseOperand() throws Bailout {
+	Node parseOperand() throws Error {
 		if (token.type == Token.NUMBER) {
 			return parseNumber();
 		}
@@ -159,7 +161,7 @@ public final class Parser {
 	}
 
 	// parse argument list (arg1, arg2, ...)
-	Node[] parseArgList() throws Bailout {
+	Node[] parseArgList() throws Error {
 		consume(Token.LPAREN);
 
 		ArrayList<Node>args = new ArrayList<Node>();
@@ -185,7 +187,7 @@ public final class Parser {
 	}
 
 	// parse a parenthesized expression
-	Node parseParenthesizedExpr() throws Bailout {
+	Node parseParenthesizedExpr() throws Error {
 		consume(Token.LPAREN);
 		Node inside = parseExpr();
 		consume(Token.RPAREN);
@@ -193,7 +195,7 @@ public final class Parser {
 	}
 
 	// parse identifier
-	Node parseIdent() throws Bailout {
+	Node parseIdent() throws Error {
 		expect(Token.IDENT);
 		Node ident = new Ident(line(), token.value);
 		advance();
@@ -201,7 +203,7 @@ public final class Parser {
 	}
 
 	// parse number
-	Node parseNumber() throws Bailout {
+	Node parseNumber() throws Error {
 		try {
 			long v = Long.parseLong(token.value);
 			Node n = new IntLit(line(), v);
@@ -236,7 +238,7 @@ public final class Parser {
 	}
 
 	// Advances by one token.
-	void advance() throws Bailout {
+	void advance() throws Error {
 		try {
 			this.token = this.next;
 			this.next = this.scan();
@@ -250,7 +252,7 @@ public final class Parser {
 
 	// check that we are at a token with type,
 	// and adance
-	void consume(int tokenType) throws Bailout {
+	void consume(int tokenType) throws Error {
 		expect(tokenType);
 		advance();
 	}
@@ -264,7 +266,7 @@ public final class Parser {
 		return t;
 	}
 
-	void skipEOL() throws Bailout {
+	void skipEOL() throws Error {
 		while (token.type == Token.EOL) {
 			advance();
 		}
@@ -274,15 +276,15 @@ public final class Parser {
 
 	// expect the current token to be of type tokenType,
 	// fatal error if not.
-	void expect(int tokenType) throws Bailout {
+	void expect(int tokenType) throws Error {
 		if (this.token.type != tokenType) {
 			error("expected " + Token.typeName(tokenType) + ", found: " + this.token.value);
 		}
 	}
 
 	// add error with position information of current token + msg.
-	void error(String msg) throws Bailout {
-		throw new Bailout(pos() + ": " + msg);
+	void error(String msg) throws Error {
+		throw new Error(pos() + ": " + msg);
 	}
 
 	// exit with compiler bug
@@ -300,10 +302,3 @@ public final class Parser {
 }
 
 
-// Bailout is throw internally to abort parsing on a fatal error.
-final class Bailout extends Throwable {
-	private static final long serialVersionUID = 1L; // sigh
-	Bailout(String msg) {
-		super(msg);
-	}
-}

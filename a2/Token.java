@@ -1,3 +1,4 @@
+package a2;
 
 // A token holds an input file token with position information, type and (string) value.
 final class Token {
