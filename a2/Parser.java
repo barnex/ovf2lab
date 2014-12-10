@@ -1,9 +1,7 @@
-import java.io.File;
-import java.io.PrintStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.util.ArrayList;
 
 // Parser transforms an input file into an Abstract Syntax Tree (AST).
@@ -18,32 +16,16 @@ final class Parser {
 
 	boolean debug = true;
 
-	public void parseFile(String filename) throws FileNotFoundException, IOException {
-		Reader reader = new FileReader(new File(filename));
-		this.scanner = new Scanner(filename, reader);
+	private Parser(InputStream in) throws IOException {
+		this.scanner = new Scanner("", new InputStreamReader(in));
+		this.errors = new ArrayList<String>();
 		this.token = this.scan();
 		this.next = this.scan();
-		this.errors = new ArrayList<String>();
+	}
 
-		// Normal parsing throws Bailout exception upon syntax error,
-		// catch it and add to errors list.
-		try {
-			parse();
-		} catch(Bailout e) {
-			// with debug: print where bailout came from
-			if (debug) {
-				printErrors(System.err);
-				e.printStackTrace();
-			}
-			// bailout without reporting an error is a bug
-			if (this.errors.size() == 0) {
-				this.errors.add("BUG: parser bailout at " + pos());
-				e.printStackTrace();
-				System.exit(2);
-			}
-			this.ast = null;
-			// nothing to do, errors are this.errors.
-		}
+	public static Node parseFile(InputStream in) throws IOException, Bailout {
+		Parser p = new Parser(in);
+		return p.parseScript();
 	}
 
 	// Parsing

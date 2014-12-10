@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.Reader;
 
 // a2 main command.
@@ -18,9 +19,9 @@ public final class A2 {
 			mainScan(args);
 		} else if(cmd.equals("parse")) {
 			mainParse(args);
-		} else if (cmd.equals("simplify")) {
-			mainSimplify(args);
-		}
+		}// else if (cmd.equals("simplify")) {
+		//   mainSimplify(args);
+		//}
 		else {
 			badUsage();
 		}
@@ -50,38 +51,30 @@ public final class A2 {
 
 	// main for parsing files
 	static void mainParse(String[] args) throws Throwable {
-		int status = 0;
 		for (int i=1; i<args.length; i++) {
 			String f = args[i];
-			Parser p = new Parser();
-			p.parseFile(f);
-			if (p.errors.size() > 0) {
-				p.printErrors(System.out);
-				status = 1;
-			} else if (p.ast != null) {
-				p.ast.print(System.out, 0);
-			}
+			Node ast = Parser.parseFile(new FileInputStream(new File(f)));
+			ast.print(System.out, 0);
 		}
-		System.exit(status);
 	}
 
 	//
-	static void mainSimplify(String[] args) throws Throwable {
-		int status = 0;
-		for (int i=1; i<args.length; i++) {
-			String f = args[i];
-			Parser p = new Parser();
-			p.parseFile(f);
-			if (p.errors.size() > 0) {
-				p.printErrors(System.out);
-				status = 1;
-			} else if (p.ast != null) {
-				Node simplified = p.ast.simplify();
-				simplified.print(System.out, 0);
-			}
-		}
-		System.exit(status);
-	}
+//	static void mainSimplify(String[] args) throws Throwable {
+//		int status = 0;
+//		for (int i=1; i<args.length; i++) {
+//			String f = args[i];
+//			Parser p = new Parser();
+//			p.parseFile(f);
+//			if (p.errors.size() > 0) {
+//				p.printErrors(System.out);
+//				status = 1;
+//			} else if (p.ast != null) {
+//				Node simplified = p.ast.simplify();
+//				simplified.print(System.out, 0);
+//			}
+//		}
+//		System.exit(status);
+//	}
 
 	static void badUsage() {
 		System.err.println("Usage: a2 scan|parse <file>");
