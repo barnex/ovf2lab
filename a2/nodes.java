@@ -5,31 +5,47 @@ import java.io.PrintStream;
 
 // This file defines multiple classes that composite the Abstract Syntax Tree (AST).
 
+abstract class AbsNode {
+	String pos;
+	Node[] children;
+
+	AbsNode(String pos) {
+		this.pos = pos;
+		this.children = new Node[0];
+	}
+
+	Node[] children() {
+		return this.children;
+	}
+
+	String pos() {
+		return this.pos;
+	}
+}
+
 // Block statement: list of statements separated by EOLs.
-class BlockStmt implements Node {
-	int line;
-	ArrayList<Node> list;
-	public BlockStmt(int line) {
-		this.line = line;
-		list = new ArrayList<Node>();
+class BlockStmt extends AbsNode implements Node {
+
+	public BlockStmt(String pos, ArrayList<Node> children) {
+		super(pos);
+		this.children = new Node[children.size()];
+		for (int i=0; i<this.children.length; i++) {
+			this.children[i] = children.get(i);
+		}
 	}
-	void add(Node e) {
-		list.add(e);
-	}
+
 	public void print(PrintStream out, int indent) {
 		Parser.printIndent(out, indent);
 		out.println("{");
-		for(Node e: list) {
+		for(Node e: children) {
 			e.print(out, indent+1);
 			out.println();
 		}
 		Parser.printIndent(out, indent);
 		out.print("}");
 	}
-	public Node simplify() {
-		for( int i=0; i<list.size(); i++) {
-			list.set(i, list.get(i).simplify());
-		}
+
+	public Node simplify() { // TODO: rm
 		return this;
 	}
 }

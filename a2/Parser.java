@@ -43,31 +43,38 @@ public final class Parser {
 		this.next = this.scan();
 	}
 
+	// TODO:rm
+	int line() {
+		return scanner.line();
+	}
 
 	// Parsing
 
 	// parse script file, as if we're inside a block statement
+	// TODO: parseInsideBlock
 	Node parseScript() throws Error {
-		BlockStmt l = new BlockStmt(line()) ;
+		ArrayList<Node> l = new ArrayList<Node>();
 		skipEOL();
 		while (token.type != Token.EOF) {
 			l.add(parseStmt());
 			expect(Token.EOL);
 			skipEOL();
 		}
-		return l;
+		BlockStmt n = new BlockStmt(pos(), l) ;
+		return n;
 	}
 
 	// parse a block statement
 	Node parseBlockStmt() throws Error {
-		BlockStmt l = new BlockStmt(line()) ;
+		ArrayList<Node> l = new ArrayList<Node>();
 		consume(Token.LBRACE);
 		while (token.type != Token.RBRACE) {
 			l.add(parseStmt());
 			consume(Token.EOL);
 		}
 		consume(Token.RBRACE);
-		return l;
+		BlockStmt n = new BlockStmt(pos(), l) ;
+		return n;
 	}
 
 	// parse a statement
@@ -249,10 +256,6 @@ public final class Parser {
 
 	String pos() {
 		return scanner.pos();
-	}
-
-	int line() {
-		return scanner.line();
 	}
 
 	// Advances by one token.

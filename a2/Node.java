@@ -6,4 +6,5 @@ import java.io.PrintStream;
 public interface Node {
 	void print(PrintStream out, int indent);
 	Node simplify();
+	// Node[] children();
 }
