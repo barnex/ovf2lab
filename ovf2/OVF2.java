@@ -118,7 +118,7 @@ public final class OVF2 {
 		return data.length;
 	}
 
-	public public String toString() {
+	public String toString() {
 		return "OVF2 " + nComp() + "x" + sizeX() + "x" + sizeY() + "x" + sizeZ();
 	}
 
