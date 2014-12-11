@@ -7,15 +7,15 @@ import java.io.PrintStream;
 
 abstract class AbsNode {
 	String pos;
-	Node[] children;
+	Node[] child;
 
-	AbsNode(String pos) {
+	AbsNode(String pos, int nChildren) {
 		this.pos = pos;
-		this.children = new Node[0];
+		this.child = new Node[nChildren];
 	}
 
 	Node[] children() {
-		return this.children;
+		return this.child;
 	}
 
 	String pos() {
@@ -27,18 +27,17 @@ abstract class AbsNode {
 class BlockStmt extends AbsNode implements Node {
 
 	public BlockStmt(String pos, ArrayList<Node> children) {
-		super(pos);
-		this.children = new Node[children.size()];
-		for (int i=0; i<this.children.length; i++) {
-			this.children[i] = children.get(i);
+		super(pos, children.size());
+		for (int i=0; i<this.child.length; i++) {
+			this.child[i] = children.get(i);
 		}
 	}
 
 	public void print(PrintStream out, int indent) {
 		Parser.printIndent(out, indent);
 		out.println("{");
-		for(Node e: children) {
-			e.print(out, indent+1);
+		for(Node c: child) {
+			c.print(out, indent+1);
 			out.println();
 		}
 		Parser.printIndent(out, indent);
@@ -51,22 +50,18 @@ class BlockStmt extends AbsNode implements Node {
 }
 
 // Assign statement "lhs op rhs", e.g.: a += b
-class AssignStmt implements Node {
-	int line;
+class AssignStmt extends AbsNode implements Node {
 	String op;
-	Node lhs, rhs;
-	AssignStmt(int line, String op) {
-		this.line = line;
+	AssignStmt(String pos, String op) {
+		super(pos, 2);
 		this.op = op;
 	}
 	public void print(PrintStream out, int indent) {
-		this.lhs.print(out, indent);
+		child[0].print(out, indent);
 		out.print(this.op);
-		this.rhs.print(out, 0);
+		child[1].print(out, 0);
 	}
 	public Node simplify() {
-		lhs = lhs.simplify();
-		rhs = rhs.simplify();
 		return this;
 	}
 }

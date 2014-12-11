@@ -85,10 +85,10 @@ public final class Parser {
 		}
 		Node expr = parseExpr();
 		if (this.token.type == Token.ASSIGN) {
-			AssignStmt ass = new AssignStmt(line(), token.value);
-			ass.lhs = expr;
+			AssignStmt ass = new AssignStmt(pos(), token.value);
+			ass.child[0] = expr;
 			advance(); // consume operator
-			ass.rhs = parseExpr();
+			ass.child[1] = parseExpr();
 			return ass;
 		}
 		if (this.token.type == Token.COLONEQUALS) {
