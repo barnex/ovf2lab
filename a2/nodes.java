@@ -72,7 +72,7 @@ class AssignStmt extends AbsNode implements Node {
 	}
 }
 
-class DeclAssign extends AbsNode implements Node {
+class DeclAssign extends AbsNode implements Node, Decl {
 	DeclAssign(String pos) {
 		super(pos, 2);
 	}
@@ -84,6 +84,15 @@ class DeclAssign extends AbsNode implements Node {
 	public Node simplify() {
 		return this;
 	}
+	public Ident ident() {
+		return (Ident)(child[0]);
+	}
+}
+
+// any declaration
+interface Decl {
+	// the identifier being declared
+	Ident ident();
 }
 
 // Postfix statement "lhs op", e.g.: a++

@@ -18,6 +18,14 @@ public final class Scope {
 		}
 		return s;
 	}
+
+	void declare(Ident ident) throws Error { // TODO: type
+		Symbol s = sym.get(ident.name);
+		if (s!=null) {
+			throw new Error(ident.pos() + ": already defined: " + ident.name);
+		}
+		sym.put(ident.name, new Symbol()); // TODO: symbol
+	}
 }
 
 final class Symbol {

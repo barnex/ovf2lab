@@ -4,6 +4,12 @@ public final class Compiler {
 
 	static void resolve(Node n, Scope s) throws Error {
 
+		if (n instanceof Decl) {
+			Decl d = (Decl)(n);
+			resolve(n.children()[1], s); // resolve rhs before declaring lhs
+			s.declare(d.ident()); // TODO: type
+		}
+
 		if (n instanceof BlockStmt) {
 			Scope childScope = new Scope();
 			childScope.parent = s;
