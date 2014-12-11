@@ -12,13 +12,13 @@ public final class Parser {
 
 	/** Parses the contents read from in.
 	    filename only serves to report file:line positions. */
-	public static Node parse(String filename, InputStream in) throws IOException, Error {
+	public static BlockStmt parse(String filename, InputStream in) throws IOException, Error {
 		Parser p = new Parser(filename, in);
 		return p.parseScript();
 	}
 
 	/** Parses a single source line, for interactive interpreter. */
-	public static Node parseLine(String line) throws Error {
+	public static BlockStmt parseLine(String line) throws Error {
 		if (line == null) {
 			throw new NullPointerException();
 		}
@@ -36,6 +36,7 @@ public final class Parser {
 
 	Scanner scanner;
 	Token token, next; // current and next (peeked) token
+	Scope scope;
 
 	private Parser(String filename, InputStream in) throws IOException {
 		this.scanner = new Scanner(filename, new InputStreamReader(in));
@@ -45,8 +46,22 @@ public final class Parser {
 
 	// Parsing
 
+	void enterScope() {
+		Scope prev = scope;
+		scope = new Scope();
+		scope.parent = prev;
+	}
+
+	void exitScope() {
+		if (scope == null) {
+			throw new IllegalStateException("went out of top-level scope");
+		}
+		scope = scope.parent;
+	}
+
 	// parse a script file (file with only statements, no top-level scope).
-	Node parseScript() throws Error {
+	BlockStmt parseScript() throws Error {
+		enterScope();
 		ArrayList<Node> l = new ArrayList<Node>();
 		while (token.type != Token.EOF) {
 			l.add(parseStmt());
@@ -54,12 +69,16 @@ public final class Parser {
 				consume(Token.EOL);
 			}
 		}
-		return new BlockStmt(pos(), l) ;
+		BlockStmt n = new BlockStmt(pos(), l, scope) ;
+		exitScope();
+		return n;
 	}
 
 	// parse a block statement
-	Node parseBlockStmt() throws Error {
+	BlockStmt parseBlockStmt() throws Error {
 		consume(Token.LBRACE);
+
+		enterScope();
 
 		// ignore first newline after opening brace
 		if (token.type == Token.EOL) {
@@ -73,8 +92,10 @@ public final class Parser {
 				consume(Token.EOL);
 			}
 		}
+		BlockStmt n = new BlockStmt(pos(), l, scope) ;
 		consume(Token.RBRACE);
-		return new BlockStmt(pos(), l) ;
+		exitScope();
+		return n;
 	}
 
 	// parse a statement, do not consume terminating EOL

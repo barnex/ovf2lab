@@ -1,6 +1,5 @@
 package a2;
 
-import java.util.ArrayList;
 import java.io.PrintStream;
 
 // This file defines multiple classes that composite the Abstract Syntax Tree (AST).
@@ -20,36 +19,6 @@ abstract class AbsNode {
 
 	public String pos() {
 		return this.pos;
-	}
-}
-
-// Block statement: list of statements separated by EOLs.
-class BlockStmt extends AbsNode implements Node {
-
-	public BlockStmt(String pos, ArrayList<Node> children) {
-		super(pos, children.size());
-		for (int i=0; i<this.child.length; i++) {
-			this.child[i] = children.get(i);
-		}
-	}
-
-	public void print(PrintStream out, int indent) {
-		Parser.printIndent(out, indent);
-		if (child.length == 0) {
-			out.println("{}");
-			return;
-		}
-		out.println("{");
-		for(Node c: child) {
-			c.print(out, indent+1);
-			out.println();
-		}
-		Parser.printIndent(out, indent);
-		out.print("}");
-	}
-
-	public Node simplify() {
-		return this;
 	}
 }
 
@@ -201,6 +170,7 @@ class BinOp extends AbsNode implements Node {
 // Identifier, e.g.: "sin"
 class Ident extends AbsNode implements Node {
 	String name;
+	Symbol sym; // points to the meaning of the identifier once its name has been resolved by Scope.resolve().
 	Ident(String pos, String name) {
 		super(pos, 0);
 		this.name = name;

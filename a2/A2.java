@@ -23,6 +23,8 @@ public final class A2 {
 			mainParse(args);
 		} else if (cmd.equals("simplify")) {
 			mainSimplify(args);
+		} else if (cmd.equals("compile")) {
+			mainCompile(args);
 		}
 		else {
 			badUsage();
@@ -66,6 +68,15 @@ public final class A2 {
 			String f = args[i];
 			Node ast = Parser.parse(f, new FileInputStream(new File(f)));
 			ast = Compiler.simplify(ast);
+			ast.print(System.out, 0);
+		}
+	}
+
+	static void mainCompile(String[] args) throws Throwable {
+		for (int i=1; i<args.length; i++) {
+			String f = args[i];
+			BlockStmt ast = Parser.parse(f, new FileInputStream(new File(f)));
+			Compiler.resolve(ast, ast.scope);
 			ast.print(System.out, 0);
 		}
 	}
