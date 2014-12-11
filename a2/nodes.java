@@ -130,7 +130,7 @@ class BinOp implements Node {
 			return new IntLit(line, val);
 		}
 		if(x instanceof NumLit && y instanceof NumLit) {
-			double val = floatOp( ((NumLit)x).value(), op, ((NumLit)y).value() );
+			double val = floatOp( ((NumLit)x).floatValue(), op, ((NumLit)y).floatValue() );
 			return new FloatLit(line, val);
 		}
 		return this;
@@ -217,7 +217,7 @@ class IntLit implements Node, NumLit {
 	public Node simplify() {
 		return this;
 	}
-	public double value() {
+	public double floatValue() {
 		return val;
 	}
 }
@@ -237,12 +237,12 @@ class FloatLit implements  Node, NumLit {
 	public Node simplify() {
 		return this;
 	}
-	public double value() {
+	public double floatValue() {
 		return val;
 	}
 }
 
 interface NumLit {
-	double value();
+	double floatValue();
 }
 
