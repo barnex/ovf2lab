@@ -95,7 +95,7 @@ public final class Parser {
 			// TODO
 		}
 		if (this.token.type == Token.POSTFIX) {
-			PostfixStmt s = new PostfixStmt(line(), expr, token.value);
+			PostfixStmt s = new PostfixStmt(pos(), expr, token.value);
 			advance(); // consume postfix operator
 			return s;
 		}
