@@ -16,10 +16,16 @@ class OVF2Lab {
 		for (;;) {
 			System.out.print(PROMPT);
 			String line = stdin.readLine();
+			if (line == null) {
+				System.out.println();
+				break;
+			}
 			try {
 				Node ast = Parser.parseLine(line);
 				ast.print(new PrintStream(System.out), 0);
+				System.out.println();
 			} catch(Error e) {
+				System.out.print("error: ");
 				System.out.println(e);
 			}
 		}
