@@ -175,8 +175,9 @@ public final class Parser {
 
 		// append successive function calls, e.g.: f(a)(b)(c)
 		while (token.type == Token.LPAREN) {
-			CallExpr call = new CallExpr(line(), expr);
-			call.args = parseArgList();
+			String pos = pos(); // original pos
+			Node[] args = parseArgList();
+			CallExpr call = new CallExpr(pos, expr, args);
 			expr = call;
 		}
 		if (expr == null) {

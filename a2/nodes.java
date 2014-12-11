@@ -84,30 +84,32 @@ class PostfixStmt extends AbsNode implements Node {
 }
 
 // Call expression: f(arg1, arg2, ...)
-class CallExpr implements Node {
-	int line;
-	Node f;
-	Node[] args;
-	CallExpr(int line, Node f) {
-		this.line = line;
-		this.f = f;
+class CallExpr extends AbsNode implements Node {
+	CallExpr(String pos, Node f, Node[] args) {
+		super(pos, 1+args.length);
+		child[0] = f;
+		for(int i=0; i<args.length; i++) {
+			child[i+1] = args[i];
+		}
+	}
+	Node arg(int i) {
+		return child[i+1];
+	}
+	int nArg() {
+		return child.length-1;
 	}
 	public void print(PrintStream out, int indent) {
-		this.f.print(out, indent);
+		child[0].print(out, indent);
 		out.print("(");
-		for(int i=0; i<this.args.length; i++) {
+		for(int i=0; i<nArg(); i++) {
 			if (i>0) {
 				out.print(", ");
 			}
-			this.args[i].print(out, 0);
+			arg(i).print(out, 0);
 		}
 		out.print(")");
 	}
 	public Node simplify() {
-		f = f.simplify();
-		for(int i=0; i<args.length; i++) {
-			args[i] = args[i].simplify();
-		}
 		return this;
 	}
 }
