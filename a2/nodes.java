@@ -115,33 +115,32 @@ class CallExpr extends AbsNode implements Node {
 }
 
 // Binary operator" x op y", e.g.: a + b
-class BinOp implements Node {
-	int line;
+class BinOp extends AbsNode implements Node {
+
 	String op;
-	Node x, y;
-	BinOp(int line, String op) {
-		this.line = line;
+
+	BinOp(String pos, String op) {
+		super(pos, 2);
 		this.op = op;
 	}
 	public void print(PrintStream out, int indent) {
 		Parser.printIndent(out, indent);
 		out.print("(");
-		this.x.print(out, 0);
+		child[0].print(out, 0);
 		out.print(this.op);
-		this.y.print(out, 0);
+		child[1].print(out, 0);
 		out.print(")");
 	}
 	public Node simplify() {
-		x = x.simplify();
-		y = y.simplify();
-
+		Node x = child[0];
+		Node y = child[1];
 		if(x instanceof IntLit && y instanceof IntLit) {
 			long val = intOp(((IntLit)x).val, op, ((IntLit)y).val);
-			return new IntLit(line, val);
+			return new IntLit(pos, val);
 		}
 		if(x instanceof NumLit && y instanceof NumLit) {
 			double val = floatOp( ((NumLit)x).floatValue(), op, ((NumLit)y).floatValue() );
-			return new FloatLit(line, val);
+			return new FloatLit(pos, val);
 		}
 		return this;
 	}
@@ -213,11 +212,10 @@ class Ident implements Node {
 }
 
 // Integer literal, e.g.: "123"
-class IntLit implements Node, NumLit {
-	int line;
+class IntLit extends AbsNode implements Node, NumLit {
 	long val;
-	IntLit(int line, long val) {
-		this.line = line;
+	IntLit(String pos, long val) {
+		super(pos, 0);
 		this.val = val;
 	}
 	public void print(PrintStream out, int indent) {
@@ -233,11 +231,10 @@ class IntLit implements Node, NumLit {
 }
 
 // Float literal, e.g.: "123e45"
-class FloatLit implements  Node, NumLit {
-	int line;
+class FloatLit extends AbsNode implements  Node, NumLit {
 	double val;
-	FloatLit(int line, double val) {
-		this.line = line;
+	FloatLit(String pos, double val) {
+		super(pos, 0);
 		this.val = val;
 	}
 	public void print(PrintStream out, int indent) {

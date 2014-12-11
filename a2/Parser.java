@@ -109,7 +109,7 @@ public final class Parser {
 		ArrayList<Node> l = new ArrayList<Node>();
 		l.add(parseOperand());
 		while (this.token.type == Token.BINOP) {
-			l.add(new BinOp(line(), token.value));
+			l.add(new BinOp(pos(), token.value));
 			this.advance();
 			l.add(parseOperand());
 		}
@@ -129,13 +129,13 @@ public final class Parser {
 					continue;
 				}
 				BinOp b = (BinOp)(e);
-				if (b.x != null) { // binop already connected
+				if (b.child[0] != null) { // binop already connected
 					continue;
 				}
 				for (String op: precedence[pr]) {
 					if (b.op.equals(op)) {
-						b.x = l.get(i-1);
-						b.y = l.get(i+1);
+						b.child[0] = l.get(i-1);
+						b.child[1] = l.get(i+1);
 						l.remove(i-1);
 						l.remove(i); //remove element i+1, now at pos i
 						i=0; // TODO: backtrack
@@ -232,7 +232,7 @@ public final class Parser {
 	Node parseNumber() throws Error {
 		try {
 			long v = Long.parseLong(token.value);
-			Node n = new IntLit(line(), v);
+			Node n = new IntLit(pos(), v);
 			advance();
 			return n;
 		} catch(NumberFormatException e) {
@@ -241,7 +241,7 @@ public final class Parser {
 
 		try {
 			double v = Double.parseDouble(token.value);
-			Node n = new FloatLit(line(), v);
+			Node n = new FloatLit(pos(), v);
 			advance();
 			return n;
 		} catch(NumberFormatException e) {
