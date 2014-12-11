@@ -14,11 +14,11 @@ abstract class AbsNode {
 		this.child = new Node[nChildren];
 	}
 
-	Node[] children() {
+	public Node[] children() {
 		return this.child;
 	}
 
-	String pos() {
+	public String pos() {
 		return this.pos;
 	}
 }
@@ -195,11 +195,10 @@ class BinOp extends AbsNode implements Node {
 }
 
 // Identifier, e.g.: "sin"
-class Ident implements Node {
-	int line;
+class Ident extends AbsNode implements Node {
 	String name;
-	Ident(int line, String name) {
-		this.line = line;
+	Ident(String pos, String name) {
+		super(pos, 0);
 		this.name = name;
 	}
 	public void print(PrintStream out, int indent) {

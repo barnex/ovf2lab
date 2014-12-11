@@ -43,11 +43,6 @@ public final class Parser {
 		this.next = this.scan();
 	}
 
-	// TODO:rm
-	int line() {
-		return scanner.line();
-	}
-
 	// Parsing
 
 	// parse script file, as if we're inside a block statement
@@ -223,7 +218,7 @@ public final class Parser {
 	// parse identifier
 	Node parseIdent() throws Error {
 		expect(Token.IDENT);
-		Node ident = new Ident(line(), token.value);
+		Node ident = new Ident(pos(), token.value);
 		advance();
 		return ident;
 	}
