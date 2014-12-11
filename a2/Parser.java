@@ -99,6 +99,9 @@ public final class Parser {
 
 		if (this.token.type == Token.COLONEQUALS) {
 			DeclAssign ass = new DeclAssign(pos());
+			if(!(expr instanceof Ident)) {
+				error("expected identifier");
+			}
 			ass.child[0] = expr;
 			advance(); // consume operator
 			ass.child[1] = parseExpr();

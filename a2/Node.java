@@ -19,4 +19,5 @@ public interface Node {
 	// This nodes children. Writing this array changes the children
 	// (e.g. used by Compiler.simplify());
 	Node[] children();
+
 }
