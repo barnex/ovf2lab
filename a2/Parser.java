@@ -98,7 +98,11 @@ public final class Parser {
 		}
 
 		if (this.token.type == Token.COLONEQUALS) {
-			// TODO
+			DeclAssign ass = new DeclAssign(pos());
+			ass.child[0] = expr;
+			advance(); // consume operator
+			ass.child[1] = parseExpr();
+			return ass;
 		}
 
 		if (this.token.type == Token.POSTFIX) {

@@ -72,6 +72,20 @@ class AssignStmt extends AbsNode implements Node {
 	}
 }
 
+class DeclAssign extends AbsNode implements Node {
+	DeclAssign(String pos) {
+		super(pos, 2);
+	}
+	public void print(PrintStream out, int indent) {
+		child[0].print(out, indent);
+		out.print(":=");
+		child[1].print(out, 0);
+	}
+	public Node simplify() {
+		return this;
+	}
+}
+
 // Postfix statement "lhs op", e.g.: a++
 class PostfixStmt extends AbsNode implements Node {
 	String op;
