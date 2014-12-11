@@ -45,39 +45,47 @@ public final class Parser {
 
 	// Parsing
 
-	// parse script file, as if we're inside a block statement
-	// TODO: parseInsideBlock
+	// parse a script file (file with only statements, no top-level scope).
 	Node parseScript() throws Error {
 		ArrayList<Node> l = new ArrayList<Node>();
-		skipEOL();
 		while (token.type != Token.EOF) {
 			l.add(parseStmt());
-			expect(Token.EOL);
-			skipEOL();
+			if(token.type != Token.EOF) { // statements must be separated by eols
+				consume(Token.EOL);
+			}
 		}
-		BlockStmt n = new BlockStmt(pos(), l) ;
-		return n;
+		return new BlockStmt(pos(), l) ;
 	}
 
 	// parse a block statement
 	Node parseBlockStmt() throws Error {
-		ArrayList<Node> l = new ArrayList<Node>();
 		consume(Token.LBRACE);
-		while (token.type != Token.RBRACE) {
-			l.add(parseStmt());
+
+		// ignore first newline after opening brace
+		if (token.type == Token.EOL) {
 			consume(Token.EOL);
 		}
+
+		ArrayList<Node> l = new ArrayList<Node>();
+		while (token.type != Token.RBRACE) {
+			l.add(parseStmt());
+			if(token.type != Token.RBRACE) { // statements must be separated by eols
+				consume(Token.EOL);
+			}
+		}
 		consume(Token.RBRACE);
-		BlockStmt n = new BlockStmt(pos(), l) ;
-		return n;
+		return new BlockStmt(pos(), l) ;
 	}
 
-	// parse a statement
+	// parse a statement, do not consume terminating EOL
 	Node parseStmt() throws Error {
-		skipEOL();
+		if(token.type == Token.EOL) {
+			return new Nop(pos());
+		}
 		if(this.token.type == Token.LBRACE) {
 			return parseBlockStmt();
 		}
+
 		Node expr = parseExpr();
 		if (this.token.type == Token.ASSIGN) {
 			AssignStmt ass = new AssignStmt(pos(), token.value);
@@ -86,14 +94,17 @@ public final class Parser {
 			ass.child[1] = parseExpr();
 			return ass;
 		}
+
 		if (this.token.type == Token.COLONEQUALS) {
 			// TODO
 		}
+
 		if (this.token.type == Token.POSTFIX) {
 			PostfixStmt s = new PostfixStmt(pos(), expr, token.value);
 			advance(); // consume postfix operator
 			return s;
 		}
+
 		return expr;
 	}
 

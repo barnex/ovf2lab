@@ -35,6 +35,10 @@ class BlockStmt extends AbsNode implements Node {
 
 	public void print(PrintStream out, int indent) {
 		Parser.printIndent(out, indent);
+		if (child.length == 0) {
+			out.println("{}");
+			return;
+		}
 		out.println("{");
 		for(Node c: child) {
 			c.print(out, indent+1);
@@ -44,7 +48,7 @@ class BlockStmt extends AbsNode implements Node {
 		out.print("}");
 	}
 
-	public Node simplify() { // TODO: rm
+	public Node simplify() {
 		return this;
 	}
 }
@@ -252,3 +256,15 @@ interface NumLit {
 	double floatValue();
 }
 
+class Nop extends AbsNode implements Node {
+	Nop(String pos) {
+		super(pos, 0);
+	}
+	public void print(PrintStream out, int indent) {
+		Parser.printIndent(out, indent);
+		out.print(";");
+	}
+	public Node simplify() {
+		return this;
+	}
+}
