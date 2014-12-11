@@ -1,6 +1,7 @@
 package a2;
 
 import java.io.PrintStream;
+import java.util.ArrayList;
 
 // This file defines multiple classes that composite the Abstract Syntax Tree (AST).
 
@@ -21,6 +22,38 @@ abstract class AbsNode {
 		return this.pos;
 	}
 }
+
+
+// Block statement: list of statements separated by EOLs.
+class BlockStmt extends AbsNode implements Node {
+
+	public BlockStmt(String pos, ArrayList<Node> children) {
+		super(pos, children.size());
+		for (int i=0; i<this.child.length; i++) {
+			this.child[i] = children.get(i);
+		}
+	}
+
+	public void print(PrintStream out, int indent) {
+		Parser.printIndent(out, indent);
+		if (child.length == 0) {
+			out.println("{}");
+			return;
+		}
+		out.println("{");
+		for(Node c: child) {
+			c.print(out, indent+1);
+			out.println();
+		}
+		Parser.printIndent(out, indent);
+		out.print("}");
+	}
+
+	public Node simplify() {
+		return this;
+	}
+}
+
 
 // Assign statement "lhs op rhs", e.g.: a += b
 class AssignStmt extends AbsNode implements Node {

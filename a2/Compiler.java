@@ -3,16 +3,32 @@ package a2;
 public final class Compiler {
 
 	static void resolve(Node n, Scope s) throws Error {
+
 		if (n instanceof BlockStmt) {
-			BlockStmt b = (BlockStmt)(n);
-			//assert(b.scope.parent == s);
-			for(Node c: b.child) {
-				resolve(c, b.scope);
+			Scope childScope = new Scope();
+			childScope.parent = s;
+			for(Node c: n.children()) {
+				resolve(c, childScope);
 			}
-		} else {
-			s.resolve(n);
+			return;
 		}
+
+		if (n instanceof Ident) {
+			Ident ident = (Ident)(n);
+			ident.sym = s.find(ident.name);
+			if (ident.sym == null) {
+				throw new Error(n.pos() + " undefined: " + ident.name);
+			}
+			return;
+		}
+
+		Node[] c = n.children();
+		for(int i=0; i<c.length; i++) {
+			resolve(c[i], s);
+		}
+
 	}
+
 
 	// recursively simplify AST rooted at N
 	static Node simplify(Node n) {

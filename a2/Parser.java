@@ -12,13 +12,13 @@ public final class Parser {
 
 	/** Parses the contents read from in.
 	    filename only serves to report file:line positions. */
-	public static BlockStmt parse(String filename, InputStream in) throws IOException, Error {
+	public static StmtList parse(String filename, InputStream in) throws IOException, Error {
 		Parser p = new Parser(filename, in);
-		return p.parseScript();
+		return p.parseStmtList();
 	}
 
 	/** Parses a single source line, for interactive interpreter. */
-	public static BlockStmt parseLine(String line) throws Error {
+	public static StmtList parseLine(String line) throws Error {
 		if (line == null) {
 			throw new NullPointerException();
 		}
@@ -26,7 +26,7 @@ public final class Parser {
 		InputStream in = new ByteArrayInputStream(line.getBytes());
 		try {
 			Parser p = new Parser("stdin", in);
-			return p.parseScript();
+			return p.parseStmtList();
 		} catch(IOException e) {
 			// ByteArrayInputStream should not throw IOException
 			panic(e.toString());
@@ -36,7 +36,6 @@ public final class Parser {
 
 	Scanner scanner;
 	Token token, next; // current and next (peeked) token
-	Scope scope;
 
 	private Parser(String filename, InputStream in) throws IOException {
 		this.scanner = new Scanner(filename, new InputStreamReader(in));
@@ -46,22 +45,9 @@ public final class Parser {
 
 	// Parsing
 
-	void enterScope() {
-		Scope prev = scope;
-		scope = new Scope();
-		scope.parent = prev;
-	}
-
-	void exitScope() {
-		if (scope == null) {
-			throw new IllegalStateException("went out of top-level scope");
-		}
-		scope = scope.parent;
-	}
-
 	// parse a script file (file with only statements, no top-level scope).
-	BlockStmt parseScript() throws Error {
-		enterScope();
+	StmtList parseStmtList() throws Error {
+		String pos = pos();
 		ArrayList<Node> l = new ArrayList<Node>();
 		while (token.type != Token.EOF) {
 			l.add(parseStmt());
@@ -69,16 +55,13 @@ public final class Parser {
 				consume(Token.EOL);
 			}
 		}
-		BlockStmt n = new BlockStmt(pos(), l, scope) ;
-		exitScope();
-		return n;
+		return new StmtList(pos, l);
 	}
 
 	// parse a block statement
 	BlockStmt parseBlockStmt() throws Error {
+		String pos = pos();
 		consume(Token.LBRACE);
-
-		enterScope();
 
 		// ignore first newline after opening brace
 		if (token.type == Token.EOL) {
@@ -92,10 +75,8 @@ public final class Parser {
 				consume(Token.EOL);
 			}
 		}
-		BlockStmt n = new BlockStmt(pos(), l, scope) ;
 		consume(Token.RBRACE);
-		exitScope();
-		return n;
+		return new BlockStmt(pos, l);
 	}
 
 	// parse a statement, do not consume terminating EOL

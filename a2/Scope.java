@@ -11,20 +11,6 @@ public final class Scope {
 		sym = new HashMap<String, Symbol>();
 	}
 
-	void resolve(Node n) throws Error {
-		Node[] c = n.children();
-		for(int i=0; i<c.length; i++) {
-			resolve(c[i]);
-		}
-		if (n instanceof Ident) {
-			Ident ident = (Ident)(n);
-			ident.sym = find(ident.name);
-			if (ident.sym == null) {
-				throw new Error(n.pos() + " undefined: " + ident.name);
-			}
-		}
-	}
-
 	Symbol find(String name) {
 		Symbol s = sym.get(name);
 		if (s == null && parent != null) {

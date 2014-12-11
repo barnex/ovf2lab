@@ -75,8 +75,9 @@ public final class A2 {
 	static void mainCompile(String[] args) throws Throwable {
 		for (int i=1; i<args.length; i++) {
 			String f = args[i];
-			BlockStmt ast = Parser.parse(f, new FileInputStream(new File(f)));
-			Compiler.resolve(ast, ast.scope);
+			StmtList ast = Parser.parse(f, new FileInputStream(new File(f)));
+			Scope scope = new Scope();
+			Compiler.resolve(ast, scope);
 			ast.print(System.out, 0);
 		}
 	}
