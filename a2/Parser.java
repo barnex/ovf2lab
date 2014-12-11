@@ -19,7 +19,7 @@ public final class Parser {
 
 	/** Parses a single source line, for interactive interpreter. */
 	public static Node parseLine(String line) throws Error {
-		if (line == null){
+		if (line == null) {
 			throw new NullPointerException();
 		}
 		line = line + ";";
