@@ -6,15 +6,18 @@ import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import javax.swing.JPanel;
 
-class ViewPane extends JPanel implements MouseListener, MouseMotionListener {
+class ViewPane extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener {
 
 	View v;
 	boolean mouseDown;
 	int lastMouseX, lastMouseY;
 	float speedx = 0.005f;
 	float speedy = 0.005f;
+	float speedz = 0.02f;
 
 	static final long serialVersionUID = 1L; // sigh
 
@@ -22,6 +25,7 @@ class ViewPane extends JPanel implements MouseListener, MouseMotionListener {
 		this.v = v;
 		this.addMouseListener(this);
 		this.addMouseMotionListener(this);
+		this.addMouseWheelListener(this);
 		this.setBackground(Color.WHITE);
 	}
 
@@ -35,6 +39,12 @@ class ViewPane extends JPanel implements MouseListener, MouseMotionListener {
 	public void mouseMoved(MouseEvent e) {
 
 	}
+
+	public void mouseWheelMoved(MouseWheelEvent e) {
+		v.camz += e.getWheelRotation()*speedz;
+		repaint();
+	}
+
 
 	public void mouseReleased(MouseEvent e) {
 		mouseDown = false;
