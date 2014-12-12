@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.util.ArrayList;
-import java.util.Collections;
+//import java.util.Collections;
 import ovf2.OVF2;
 
 final class View {
@@ -34,19 +34,41 @@ final class View {
 	}
 
 	void render(OVF2 data) {
-		float cx = data.xBase/2;
-		float cy = data.yBase/2;
-		float cz = data.zBase/2;
+
+		// world size
+		float wx = data.xBase*data.sizeX();
+		float wy = data.yBase*data.sizeY();
+		float wz = data.zBase*data.sizeZ();
+		float max = max(max(wx, wy), wz);
+		// cellsizes normalized so that max world size = 1
+		float cx = data.xBase/max;
+		float cy = data.yBase/max;
+		float cz = data.zBase/max;
+		float rx = cx/2;
+		float ry = cy/2;
+		float rz = cz/2;
 
 		for(int iz=0; iz<data.sizeZ(); iz++) {
-			float z = (iz-data.sizeZ()/2) * data.zBase;
+			float z = (iz-data.sizeZ()/2) * cz;
 			for(int iy=0; iy<data.sizeY(); iy++) {
-				float y = (iy-data.sizeY()/2) * data.yBase;
+				float y = (iy-data.sizeY()/2) * cy;
 				for(int ix=0; ix<data.sizeX(); ix++) {
-					float x = (ix-data.sizeX()/2) * data.zBase;
+					float x = (ix-data.sizeX()/2) * cx;
 
 					if (!haveCell(data, ix, iy, iz+1)) {
-						polys.add(Poly.zFace(z, x-rx, y-ry, x+rx, y+ry, Color.RED));
+						polys.add(Poly.zFace(z+rz, x-rx, y-ry, x+rx, y+ry, Color.RED));
+					}
+
+					if (!haveCell(data, ix, iy, iz-1)) {
+						polys.add(Poly.zFace(z-rz, x-rx, y-ry, x+rx, y+ry, Color.BLUE).flip());
+					}
+
+					if (!haveCell(data, ix+1, iy, iz)) {
+						polys.add(Poly.xFace(x+rx, y-ry, z-rz, y+ry, z+rz, Color.GREEN));
+					}
+
+					if (!haveCell(data, ix-1, iy, iz)) {
+						polys.add(Poly.xFace(x-rx, y-ry, z-rz, y+ry, z+rz, Color.YELLOW).flip());
 					}
 
 				}
@@ -78,7 +100,7 @@ final class View {
 		for(Poly p: polys) {
 			transform(p);
 		}
-		Collections.sort(polys);
+		//Collections.sort(polys);
 
 		for(Poly p: polys) {
 			// cull faces pointing backward
@@ -176,6 +198,14 @@ final class View {
 	}
 	float min(float x, float y) {
 		if (x<y) {
+			return x;
+		}
+		else {
+			return y;
+		}
+	}
+	float max(float x, float y) {
+		if(x>y) {
 			return x;
 		}
 		else {
