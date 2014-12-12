@@ -1,9 +1,10 @@
 package view;
 
-import java.awt.Polygon;
+import java.awt.Color;
 import java.awt.Graphics2D;
-import java.util.Collections;
+import java.awt.Polygon;
 import java.util.ArrayList;
+import java.util.Collections;
 import ovf2.OVF2;
 
 final class View {
@@ -33,13 +34,39 @@ final class View {
 	}
 
 	void render(OVF2 data) {
+		float cx = data.xBase/2;
+		float cy = data.yBase/2;
+		float cz = data.zBase/2;
+
 		for(int iz=0; iz<data.sizeZ(); iz++) {
+			float z = (iz-data.sizeZ()/2) * data.zBase;
 			for(int iy=0; iy<data.sizeY(); iy++) {
+				float y = (iy-data.sizeY()/2) * data.yBase;
 				for(int ix=0; ix<data.sizeX(); ix++) {
+					float x = (ix-data.sizeX()/2) * data.zBase;
+
+					if (!haveCell(data, ix, iy, iz+1)) {
+						polys.add(Poly.zFace(z, x-rx, y-ry, x+rx, y+ry, Color.RED));
+					}
 
 				}
 			}
 		}
+		System.out.println("polys" + polys.size());
+	}
+
+	static boolean haveCell(OVF2 data, int ix, int iy, int iz) {
+		if(iz >= data.sizeZ() || iz < 0) {
+			return false;
+		}
+		if(iy >= data.sizeY() || iy < 0) {
+			return false;
+		}
+		if(ix >= data.sizeX() || ix < 0) {
+			return false;
+		}
+		// TODO: check for data in cell
+		return true;
 	}
 
 	void paint(Graphics2D g, int w, int h) {
