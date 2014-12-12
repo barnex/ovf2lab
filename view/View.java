@@ -2,7 +2,9 @@ package view;
 
 import java.awt.Polygon;
 import java.awt.Graphics2D;
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.ArrayList;
+import ovf2.OVF2;
 
 final class View {
 
@@ -19,7 +21,7 @@ final class View {
 	float m21, m22, m23;
 	float m31, m32, m33;
 
-	Poly[] polys;
+	ArrayList<Poly> polys;
 
 	//One polygon to be re-used many times for drawing each polygon of the 3D object
 	final Polygon POLYGON_BUFFER = new Polygon(new int[4], new int[4], 4);
@@ -27,7 +29,17 @@ final class View {
 	final double PI = Math.PI;
 
 	View() {
-		polys = new Poly[0];
+		polys = new ArrayList<Poly>();
+	}
+
+	void render(OVF2 data) {
+		for(int iz=0; iz<data.sizeZ(); iz++) {
+			for(int iy=0; iy<data.sizeY(); iy++) {
+				for(int ix=0; ix<data.sizeX(); ix++) {
+
+				}
+			}
+		}
 	}
 
 	void paint(Graphics2D g, int w, int h) {
@@ -39,7 +51,7 @@ final class View {
 		for(Poly p: polys) {
 			transform(p);
 		}
-		Arrays.sort(polys);
+		Collections.sort(polys);
 
 		for(Poly p: polys) {
 			// cull faces pointing backward
