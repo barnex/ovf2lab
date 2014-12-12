@@ -12,8 +12,7 @@ final class View {
 
 	// viewport size
 	int width, height;
-	float scale = 1;
-	float persp = 1;
+	float persp = 1, scale = 1;
 
 	//transformation matrix
 	float m11, m12, m13;
@@ -21,7 +20,6 @@ final class View {
 	float m31, m32, m33;
 
 	Poly[] polys;
-	boolean sorted;
 
 	//One polygon to be re-used many times for drawing each polygon of the 3D object
 	final Polygon POLYGON_BUFFER = new Polygon(new int[4], new int[4], 4);
@@ -35,12 +33,18 @@ final class View {
 	void paint(Graphics2D g, int w, int h) {
 		this.width = w;
 		this.height = h;
+		this.scale = Math.min(width, height);
 
-		if (!sorted) {
-			Arrays.sort(polys);
+		updateMatrix();
+		for(Poly p: polys) {
+			transform(p);
 		}
+		Arrays.sort(polys);
 
-		g.fillPolygon(new int[] {0, 200, 500}, new int[] {0, 0, 200}, 3);
+		for(Poly p: polys) {
+			g.setColor(p.color);
+			g.fillPolygon(p.xpoints, p.ypoints, p.xpoints.length)			;
+		}
 
 	}
 
@@ -56,8 +60,6 @@ final class View {
 		m31 = sin(phi)*cos(theta)*scale;
 		m32 = sin(theta)*scale;
 		m33 = cos(phi)*cos(theta)*scale;
-
-		sorted = false;
 	}
 
 
@@ -67,34 +69,34 @@ final class View {
 		float x = (m11 * p.x1 + m12 * p.y1 + m13 * p.z1) - camx;
 		float y = (m21 * p.x1 + m22 * p.y1 + m23 * p.z1) - camy;
 		float z = (m31 * p.x1 + m32 * p.y1 + m33 * p.z1) - camz;
-		p.xpoints[0] = (int)(x);
-		p.ypoints[0] = (int)(y);
+		p.xpoints[0] = (int)(x+width/2);
+		p.ypoints[0] = (int)(y+height/2);
 		p.z = z;
 
 		x = (m11 * p.x2 + m12 * p.y2 + m13 * p.z2) - camx;
 		y = (m21 * p.x2 + m22 * p.y2 + m23 * p.z2) - camy;
 		z = (m31 * p.x2 + m32 * p.y2 + m33 * p.z2) - camz;
-		p.xpoints[1] = (int)(x);
-		p.ypoints[1] = (int)(y);
+		p.xpoints[1] = (int)(x+width/2);
+		p.ypoints[1] = (int)(y+height/2);
 		p.z += z; // z is average, for sorting
 
 		x = (m11 * p.x3 + m12 * p.y3 + m13 * p.z3) - camx;
 		y = (m21 * p.x3 + m22 * p.y3 + m23 * p.z3) - camy;
 		z = (m31 * p.x3 + m32 * p.y3 + m33 * p.z3) - camz;
-		p.xpoints[2] = (int)(x);
-		p.ypoints[2] = (int)(y);
+		p.xpoints[2] = (int)(x+width/2);
+		p.ypoints[2] = (int)(y+height/2);
 		p.z += z; // z is average, for sorting
 
 		x = (m11 * p.x4 + m12 * p.y4 + m13 * p.z4) - camx;
 		y = (m21 * p.x4 + m22 * p.y4 + m23 * p.z4) - camy;
 		z = (m31 * p.x4 + m32 * p.y4 + m33 * p.z4) - camz;
-		p.xpoints[3] = (int)(x);
-		p.ypoints[3] = (int)(y);
+		p.xpoints[3] = (int)(x+width/2);
+		p.ypoints[3] = (int)(y+height/2);
 		p.z += z; // z is average, for sorting
 
 	}
 
-	void rotateCam(double dPhi, double dTheta) {
+	void rotCam(double dPhi, double dTheta) {
 		phi += dPhi;
 		phi %= 2*PI;
 		theta += dTheta;
@@ -104,7 +106,6 @@ final class View {
 	void setCamDir(float phi, float theta) {
 		this.phi = phi;
 		this.theta = theta;
-		updateMatrix();
 	}
 
 	void moveCam(float dx, float dy, float dz) {
@@ -115,7 +116,6 @@ final class View {
 		camx = x;
 		camy = y;
 		camz = z;
-		updateMatrix();
 	}
 
 	float sin(float x) {
