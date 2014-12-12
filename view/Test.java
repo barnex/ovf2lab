@@ -12,8 +12,13 @@ public class Test {
 		View v = new View();
 
 		v.polys = new Poly[] {
-		    Poly.zFace(-0.25f, -0.25f, -0.25f, 0.25f, 0.25f, Color.BLUE),
-		    Poly.zFace(0.25f, -0.25f, -0.25f, 0.25f, 0.25f, Color.RED)
+		    Poly.zFace(-0.25f, -0.25f, -0.25f, 0.25f, 0.25f, Color.BLUE).flip(),
+		    Poly.zFace(0.25f, -0.25f, -0.25f, 0.25f, 0.25f, Color.RED),
+		    Poly.xFace(-0.25f, -0.25f, -0.25f, 0.25f, 0.25f, Color.BLACK).flip(),
+		    Poly.xFace(0.25f, -0.25f, -0.25f, 0.25f, 0.25f, Color.WHITE),
+		    Poly.yFace(-0.25f, -0.25f, -0.25f, 0.25f, 0.25f, Color.GREEN).flip(),
+		    Poly.yFace(0.25f, -0.25f, -0.25f, 0.25f, 0.25f, Color.YELLOW),
+
 		};
 
 		ViewPane vp = new ViewPane(v);

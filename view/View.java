@@ -42,8 +42,12 @@ final class View {
 		Arrays.sort(polys);
 
 		for(Poly p: polys) {
+			// cull faces pointing backward
+			if (p.orientation() < 0) {
+				continue;
+			}
 			g.setColor(p.color);
-			g.fillPolygon(p.xpoints, p.ypoints, p.xpoints.length)			;
+			g.fillPolygon(p.xpoints, p.ypoints, p.xpoints.length);
 		}
 
 	}
@@ -70,28 +74,28 @@ final class View {
 		float y = (m21 * p.x1 + m22 * p.y1 + m23 * p.z1) - camy;
 		float z = (m31 * p.x1 + m32 * p.y1 + m33 * p.z1) - camz;
 		p.xpoints[0] = (int)(x+width/2);
-		p.ypoints[0] = (int)(y+height/2);
+		p.ypoints[0] = (int)(height/2-y);
 		p.z = z;
 
 		x = (m11 * p.x2 + m12 * p.y2 + m13 * p.z2) - camx;
 		y = (m21 * p.x2 + m22 * p.y2 + m23 * p.z2) - camy;
 		z = (m31 * p.x2 + m32 * p.y2 + m33 * p.z2) - camz;
 		p.xpoints[1] = (int)(x+width/2);
-		p.ypoints[1] = (int)(y+height/2);
+		p.ypoints[1] = (int)(height/2-y);
 		p.z += z; // z is average, for sorting
 
 		x = (m11 * p.x3 + m12 * p.y3 + m13 * p.z3) - camx;
 		y = (m21 * p.x3 + m22 * p.y3 + m23 * p.z3) - camy;
 		z = (m31 * p.x3 + m32 * p.y3 + m33 * p.z3) - camz;
 		p.xpoints[2] = (int)(x+width/2);
-		p.ypoints[2] = (int)(y+height/2);
+		p.ypoints[2] = (int)(height/2-y);
 		p.z += z; // z is average, for sorting
 
 		x = (m11 * p.x4 + m12 * p.y4 + m13 * p.z4) - camx;
 		y = (m21 * p.x4 + m22 * p.y4 + m23 * p.z4) - camy;
 		z = (m31 * p.x4 + m32 * p.y4 + m33 * p.z4) - camz;
 		p.xpoints[3] = (int)(x+width/2);
-		p.ypoints[3] = (int)(y+height/2);
+		p.ypoints[3] = (int)(height/2-y);
 		p.z += z; // z is average, for sorting
 
 	}

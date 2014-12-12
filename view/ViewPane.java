@@ -1,11 +1,12 @@
 package view;
 
-import javax.swing.JPanel;
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.Graphics;
+import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseEvent;
-import java.awt.Graphics2D;
+import javax.swing.JPanel;
 
 class ViewPane extends JPanel implements MouseListener, MouseMotionListener {
 
@@ -21,6 +22,7 @@ class ViewPane extends JPanel implements MouseListener, MouseMotionListener {
 		this.v = v;
 		this.addMouseListener(this);
 		this.addMouseMotionListener(this);
+		this.setBackground(Color.WHITE);
 	}
 
 
@@ -42,7 +44,7 @@ class ViewPane extends JPanel implements MouseListener, MouseMotionListener {
 		if (mouseDown) {
 			int dx = e.getX() - lastMouseX;
 			int dy = e.getY() - lastMouseY;
-			v.rotCam(-dx*speedx, -dy*speedy);
+			v.rotCam(-dx*speedx, dy*speedy);
 			lastMouseX = e.getX();
 			lastMouseY = e.getY();
 			repaint();
