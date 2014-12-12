@@ -43,7 +43,7 @@ final class View {
 
 		for(Poly p: polys) {
 			// cull faces pointing backward
-			if (p.orientation() < 0) {
+			if (p.z <= 0 || p.orientation() < 0) {
 				continue;
 			}
 			g.setColor(p.color);
@@ -53,19 +53,18 @@ final class View {
 	}
 
 	void updateMatrix() {
-		m11 = cos(phi)*scale;
+		m11 = cos(phi);
 		m12 = 0;
-		m13 = -sin(phi)*scale;
+		m13 = -sin(phi);
 
-		m21 = -sin(phi)*sin(theta)*scale;
-		m22 = cos(theta)*scale;
-		m23 = -cos(phi)*sin(theta)*scale;
+		m21 = -sin(phi)*sin(theta);
+		m22 = cos(theta);
+		m23 = -cos(phi)*sin(theta);
 
-		m31 = sin(phi)*cos(theta)*scale;
-		m32 = sin(theta)*scale;
-		m33 = cos(phi)*cos(theta)*scale;
+		m31 = -sin(phi)*cos(theta);
+		m32 = -sin(theta);
+		m33 = -cos(phi)*cos(theta);
 	}
-
 
 
 	void transform(Poly p) {
@@ -73,30 +72,38 @@ final class View {
 		float x = (m11 * p.x1 + m12 * p.y1 + m13 * p.z1) - camx;
 		float y = (m21 * p.x1 + m22 * p.y1 + m23 * p.z1) - camy;
 		float z = (m31 * p.x1 + m32 * p.y1 + m33 * p.z1) - camz;
-		p.xpoints[0] = (int)(x+width/2);
-		p.ypoints[0] = (int)(height/2-y);
+		x/=z;
+		y/=z;
+		p.xpoints[0] = (int)(scale*x+width/2);
+		p.ypoints[0] = (int)(height/2-scale*y);
 		p.z = z;
 
 		x = (m11 * p.x2 + m12 * p.y2 + m13 * p.z2) - camx;
 		y = (m21 * p.x2 + m22 * p.y2 + m23 * p.z2) - camy;
 		z = (m31 * p.x2 + m32 * p.y2 + m33 * p.z2) - camz;
-		p.xpoints[1] = (int)(x+width/2);
-		p.ypoints[1] = (int)(height/2-y);
-		p.z += z; // z is average, for sorting
+		x/=z;
+		y/=z;
+		p.xpoints[1] = (int)(scale*x+width/2);
+		p.ypoints[1] = (int)(height/2-scale*y);
+		p.z = min(p.z, p.z+z); // z is average, for sorting
 
 		x = (m11 * p.x3 + m12 * p.y3 + m13 * p.z3) - camx;
 		y = (m21 * p.x3 + m22 * p.y3 + m23 * p.z3) - camy;
 		z = (m31 * p.x3 + m32 * p.y3 + m33 * p.z3) - camz;
-		p.xpoints[2] = (int)(x+width/2);
-		p.ypoints[2] = (int)(height/2-y);
-		p.z += z; // z is average, for sorting
+		x/=z;
+		y/=z;
+		p.xpoints[2] = (int)(scale*x+width/2);
+		p.ypoints[2] = (int)(height/2-scale*y);
+		p.z = min(p.z, p.z+z);
 
 		x = (m11 * p.x4 + m12 * p.y4 + m13 * p.z4) - camx;
 		y = (m21 * p.x4 + m22 * p.y4 + m23 * p.z4) - camy;
 		z = (m31 * p.x4 + m32 * p.y4 + m33 * p.z4) - camz;
-		p.xpoints[3] = (int)(x+width/2);
-		p.ypoints[3] = (int)(height/2-y);
-		p.z += z; // z is average, for sorting
+		x/=z;
+		y/=z;
+		p.xpoints[3] = (int)(scale*x+width/2);
+		p.ypoints[3] = (int)(height/2-scale*y);
+		p.z = min(p.z, p.z+z);
 
 	}
 
@@ -127,5 +134,13 @@ final class View {
 	}
 	float cos(float x) {
 		return (float)(Math.cos(x));
+	}
+	float min(float x, float y) {
+		if (x<y) {
+			return x;
+		}
+		else {
+			return y;
+		}
 	}
 }

@@ -15,7 +15,7 @@ public class Test {
 		    Poly.zFace(-0.25f, -0.25f, -0.25f, 0.25f, 0.25f, Color.BLUE).flip(),
 		    Poly.zFace(0.25f, -0.25f, -0.25f, 0.25f, 0.25f, Color.RED),
 		    Poly.xFace(-0.25f, -0.25f, -0.25f, 0.25f, 0.25f, Color.BLACK).flip(),
-		    Poly.xFace(0.25f, -0.25f, -0.25f, 0.25f, 0.25f, Color.WHITE),
+		    Poly.xFace(0.25f, -0.25f, -0.25f, 0.25f, 0.25f, Color.GRAY),
 		    Poly.yFace(-0.25f, -0.25f, -0.25f, 0.25f, 0.25f, Color.GREEN).flip(),
 		    Poly.yFace(0.25f, -0.25f, -0.25f, 0.25f, 0.25f, Color.YELLOW),
 
