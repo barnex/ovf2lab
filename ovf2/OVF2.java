@@ -11,7 +11,8 @@ import java.nio.ByteBuffer;
 // There is no guarantee that non-mumax files are accepted.
 public final class OVF2 {
 
-	public float[][][][] data;  // data index by: component, z, y, x
+	public float[][][][] data;        // data indexed by: component, z, y, x
+	public float xBase, yBase, zBase; // cell sizes
 
 	// Reads OVF2, binary 4 format, from in.
 	public static OVF2 read(InputStream in) throws IOException {
@@ -24,6 +25,7 @@ public final class OVF2 {
 
 
 		int nComp =0, sizeX =0, sizeY =0, sizeZ = 0;
+		OVF2 ovf2 = new OVF2();
 
 		line = readline(in);
 		while (!"# End: Header".equals(line)) {
@@ -42,6 +44,15 @@ public final class OVF2 {
 			}
 			if ("valuedim".equals(key)) {
 				nComp = Integer.parseInt(val);
+			}
+			if ("xbase".equals(key)) {
+				ovf2.xBase = Float.parseFloat(val);
+			}
+			if ("ybase".equals(key)) {
+				ovf2.yBase = Float.parseFloat(val);
+			}
+			if ("zbase".equals(key)) {
+				ovf2.zBase = Float.parseFloat(val);
 			}
 
 			line = readline(in);
@@ -93,7 +104,6 @@ public final class OVF2 {
 			}
 		}
 
-		OVF2 ovf2 = new OVF2();
 		ovf2.data = data;
 		return ovf2;
 	}
@@ -119,7 +129,8 @@ public final class OVF2 {
 	}
 
 	public String toString() {
-		return "OVF2 " + nComp() + "x" + sizeX() + "x" + sizeY() + "x" + sizeZ();
+		return "OVF2 " + nComp() + "x" + sizeX() + "x" + sizeY() + "x" + sizeZ() +
+		       "," + xBase + "x" + yBase + "x" + zBase + "m";
 	}
 
 	// Reads a line from in.
